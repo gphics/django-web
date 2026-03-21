@@ -1,0 +1,21 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %} {% endblock %}</title>
+    {% comment %}
+    <script src="https://cdn.tailwindcss.com"></script>
+    {% endcomment %}
+  </head>
+  <body>
+    {% if user.is_authenticated %}
+    <div>
+      <h4> Welcome {{user}} </h4>
+      <a href="{% url 'account:logout' %}"> Logout </a>
+    </div>
+    {% endif %}
+    <div class="content">{% block content %} {% endblock %}</div>
+  </body>
+</html>

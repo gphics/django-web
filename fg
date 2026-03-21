@@ -1,0 +1,42 @@
+posts = [
+    {
+        "title": "The Future of Python in 2026",
+        "content": "Python continues to dominate the AI landscape. With the release of version 3.14, performance gains are making it more competitive with low-level languages while maintaining its signature readability."
+    },
+    {
+        "title": "Why I Switched to Tailwind CSS",
+        "content": "Utility-first CSS felt messy at first. However, after building three projects, I realized I never want to write a custom media query again. It's all about speed and consistency."
+    },
+    {
+        "title": "Mastering the Django ORM",
+        "content": "Stop writing raw SQL. Django's ORM is powerful enough to handle complex aggregations and annotations. Always remember to use select_related() to avoid the N+1 query problem!"
+    },
+    {
+        "title": "A Guide to Clean Code",
+        "content": "Code is read much more often than it is written. Using descriptive variable names and keeping functions small makes your future self much happier during debugging sessions."
+    },
+    {
+        "title": "The Rise of TypeScript",
+        "content": "Type safety isn't just for Java developers anymore. TypeScript brings a level of predictability to the frontend that vanilla JavaScript simply cannot match."
+    },
+    {
+        "title": "Dockerizing Your Development",
+        "content": "It works on my machine! With Docker, that sentence actually means something. Containerization ensures your Django environment is identical from local dev to production."
+    },
+    {
+        "title": "Async in Django: When to Use It",
+        "content": "Django's async capabilities are growing. Use async views for I/O bound tasks like calling external APIs, but stick to synchronous code for standard database CRUD operations."
+    },
+    {
+        "title": "Modern Frontend Architecture",
+        "content": "Is the Single Page App (SPA) dead?Tools like HTMX and Alpine.js are bringing power back to server-side rendering, proving that you don't always need a massive React bundle."
+    },
+    {
+        "title": "Securing Your Web Apps",
+        "content": "Security is a process, not a product.From CSRF tokens to secure headers, Django handles the basics, but you must remain vigilant about user-uploaded content and data sanitization."
+    },
+    {
+        "title": "The Joy of Open Source",
+        "content": "Contributing to a library you use daily is the best way to grow as a dev.Start small with documentation fixes and work your way up to feature pull requests."
+    }
+]

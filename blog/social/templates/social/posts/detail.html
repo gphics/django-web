@@ -1,0 +1,53 @@
+{% extends "social/base.html" %} 
+{% block title %} {{ data.title }} {% endblock title %} 
+
+{% block content %}
+
+<section>
+  <h3>{{data.title}}</h3>
+
+  <p>{{data.content|linebreaks}}</p>
+  <small> Published on{{data.created}} by {{data.author}} </small>
+  <br />
+  <small> {{data.get_status_display}} </small>
+</section>
+
+
+
+{% comment %} messages {% endcomment %}
+{% if messages %}
+
+<ul>
+{% for message in messages %}
+<li>
+{{message|safe}}
+
+</li>
+
+{% endfor %}
+
+</ul>
+
+{% endif %}
+
+<form method="post" action="{% url 'social:create_comment' data.id %}">
+  {% csrf_token %} {{form.as_p}}
+  <button type="submit">Comment</button>
+</form>
+{% if comments %}
+<h4> All comments ({{comments.count}}) </h4>
+<hr/>
+{% for comment in comments%}
+  <div>
+    <p> {{comment.content}} </p>
+    <small>  comment by {{comment.name}} on {{comment.created}}  </small>
+    <br> 
+    <hr>
+  </div>
+
+{% endfor %}
+
+{% endif %} 
+
+
+{% endblock content %}
