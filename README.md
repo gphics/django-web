@@ -1,0 +1,1 @@
+# This repository serves as a base for many django fullstack web applications.
