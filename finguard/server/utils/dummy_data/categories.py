@@ -16,7 +16,7 @@ transaction_categories =  [
     "Gifts & Donations"    # Charity, birthdays
 ]
 
-url = "http://127.0.0.1:8000/category"
+url = "http://127.0.0.1:8000/transaction/category"
 
 def category_creation():
     # Authorizations ...

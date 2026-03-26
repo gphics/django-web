@@ -2,7 +2,7 @@ from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from .models import Transaction, Profile
 from django.db.models import F
-from .serializers import TransactionReadSerializer
+from .serializers import ShallowTransactionReadSerializer
 from utils import DataTransformationEngine, get_spending_pattern
 import traceback
 from django.db import transaction
@@ -15,7 +15,7 @@ def get_summary_stat(user):
     all_transactions = user.transactions.all()
 
     # serializing the all_transactions queryset to python data type
-    serializer = TransactionReadSerializer(instance = all_transactions, many = True)
+    serializer = ShallowTransactionReadSerializer(instance = all_transactions, many = True)
 
     
     # getting serialized transactions

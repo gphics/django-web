@@ -10,7 +10,8 @@ def send_request(url, payload, headers={}, method="post"):
             result = response.json()
             if result["success"]:
                 print("Data sent successfully")
-            print(result)
+            else:
+                print(result)
         return response.json()
     except Exception as e:
         raise e

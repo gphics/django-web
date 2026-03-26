@@ -13,6 +13,8 @@ states = [
     "Ekiti"
 ]
 
+random_states = [np.random.choice(states) for _ in [*states, *states]]
+
 cities = [
     "Ibadan",
     "Ogbomosho",
@@ -24,6 +26,7 @@ cities = [
     "Ikere-Ekiti"
 ]
 
+random_cities = [np.random.choice(cities) for _ in [*cities, *cities]]
 # A list of 10 common ISO 4217 currency codes
 currencies = ["NGN", "USD", "EUR", "GBP", "JPY", "CNY", "CAD", "AUD", "CHF", "INR"]
 
@@ -40,9 +43,9 @@ def update_profile():
 
             payload = {
                 "profile":{
-                "state":str(np.random.choice(states)),
+                "state":str(np.random.choice(random_states)),
                 "country":country,
-                "city":str(np.random.choice(cities)),
+                "city":str(np.random.choice(random_cities)),
                 "currency":str(np.random.choice(currencies))
             }}
            

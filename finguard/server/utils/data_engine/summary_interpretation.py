@@ -65,7 +65,9 @@ class InterpretationEngine(Helper):
 
         # destructuring the data parameter
         self.amount = data.get("amount", None)
+        self.category = data.get("category", None)
         self.transaction_dates = data.get("transaction_dates", None)
+        self.transaction_type = data.get("transaction_type", None)
         self.amount_by_date = data.get("amount_by_date", None)
 
         # others
@@ -261,7 +263,22 @@ class InterpretationEngine(Helper):
         
         return result
        
+
+    def interpret_category(self):
+        """
+        This method interpret the category summary stat
+        """
+        pass
+    def interpret_transaction_type(self):
+        """
+        This method interpret the transaction type summary stat
+        """
+        pass
+
     def interpret_all(self):
+        """
+        
+        """
         result = {}
 
         result["amount"] = self.interpret_amount()
@@ -269,3 +286,5 @@ class InterpretationEngine(Helper):
         result["amount_by_date"] = self.interpret_amount_by_date()
 
         return result
+
+    

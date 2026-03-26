@@ -1,6 +1,9 @@
 import pandas as pd
 import numpy as np
-
+from scipy.stats import shapiro, ttest_ind, mannwhitneyu
+import pingouin as pg
+import seaborn as sns
+import matplotlib.pyplot as plt
 class TransformationUtils:
     """
     This class handle non-business related operations or those considered not main ops.
@@ -11,7 +14,7 @@ class TransformationUtils:
     def __init__(self, all_trans):
         self.raw_data = [*all_trans]
         self.df = pd.DataFrame(self.raw_data)
-
+        
         # transforming date
         self.df["transaction_date"] = pd.to_datetime(self.df["transaction_date"])
 
@@ -33,7 +36,7 @@ class TransformationUtils:
 
     def get_feature_min_max(self, feature:str):
         """
-        This method takes a feature and return the value with minimum and maximum occurence
+        This method takes a feature and return the value with the minimum and maximum occurence
 
         Params:
 
@@ -46,9 +49,14 @@ class TransformationUtils:
                 min:[actual_value, freq]
         """
         freq = self.df[feature].value_counts()
+
+        # if only one unique value exist for the feature, in which max is the same as min
+        max_only = True if len(freq.index) < 2 else False
+        
         result = {
             "max":[str(freq.idxmax()), int(freq.max())],
             "min":[str(freq.idxmin()), int(freq.min())],
+            "max_only" : max_only  # for interpretation purpose only
         }
         return result
 
@@ -91,6 +99,14 @@ class TransformationUtils:
             "max":[largest.index[0], largest.values[0]],
         }
         return result
+
+    def get_percentage_prop(self, total_freq:int, feature_freq:int) -> int | float:
+        """
+        This function returns a percentage proportion of a particular relative to another value
+        """
+        return np.round(feature_freq * 100/total_freq)
+
+    
 
 class MainEngine(TransformationUtils):
     """
@@ -143,5 +159,81 @@ class MainEngine(TransformationUtils):
         except Exception as e:
             print(e)
 
+    def basic_transformation(self, feature:str):
+        """
+        This method get the min and max occurences of a feature param
+        """
+        return self.get_feature_min_max(feature)
+    
+    def get_raw_transaction_amount(self):
+        """
+        This method returns the self.df['amount']
+        """
+        return self.df["amount"]
+    
+    def get_transaction_amount_mean(self):
+        """
+        This method returns the mean of self.df['amount']
+        """
+        return self.df["amount"].mean()
+    
+    def verify_normalcy(self, data = None) -> bool:
+        """
+        This method uses shapiro to check if a particular data is normally distributed.
+
+        Params:
+        
+            data?:the transaction['amount'] to test the normalcy on.
+
+        Returns:
+            bool: True  if normally distributed else False
+
+        """
+        data = data if data is not None else self.df["amount"]
+        _, p_value = shapiro(data)
+
+        significance = 0.05
+        if p_value < significance:
+            return False
+        return True
+    
+    def translate_significance(self, p_value: float | int) -> bool:
+        """
+        This method returns a boolean value if the provided p_value is significant or not
+        """
+
+        significance = 0.05
+        if p_value < significance:
+            return True
+        return False
+    
+
+    def check_mean_significance_ind(self, second_data, first_data=None) -> bool:
+        """
+        This method is responsible for performing two tailed two sample ttest or mannwhiteneyu test depending on the normalcy state of the provided data on transaction['amount'].
+
+        Params:
+            first_data?: a list containing the transaction['amount]. if not provided, the amount on self.df is used
+            second_data: required, a list containing the transaction['amount]. 
+
+        """
+        # filling the first data if necessary
+        first_data = first_data if first_data is not None else self.df["amount"]
+
+        # checking if first and second data are normal
+        is_normal_1 = self.verify_normalcy(first_data)
+        is_normal_2 = self.verify_normalcy(second_data)
+
+        # main operation
+        if is_normal_1 and is_normal_2:
+            # perform a parametric test
+            _, p_value = ttest_ind(first_data, second_data, equal_var=False)
+            
+        else:
+            # perform a non-parametric test
+            _, p_value = mannwhitneyu(first_data, second_data)
+            
+        return self.translate_significance(p_value)
+       
     
         

@@ -17,7 +17,7 @@ find -iname "migrations" | xargs rm -rf
 echo "DELETING TOKENS.TXT"
 find -iname "tokens.txt" | xargs rm -rf
 
-django_apps=("main" "ml")
+django_apps=("account" "transaction" "ml")
 
 # looping through the djangoapps
 for app in "${django_apps[@]}"

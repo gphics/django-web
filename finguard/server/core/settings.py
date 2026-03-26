@@ -31,7 +31,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 CUSTOM_APPS = [
-    "main",
+    "account",
+    "transaction",
     "ml"
 ]
 THIRD_PARTY_APPS = [
