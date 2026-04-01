@@ -1,0 +1,12 @@
+### Upload Transactions file
+
+POST http://127.0.0.1:8000/transaction/
+Authorization: Token 7be35bbb2943250b678efbcd285c0547a5b41717
+Content-Type:multipart/form-data; boundary=---bound
+
+---bound
+Content-Disposition: form-data; name="transaction_file"; filename="dummy_transactions.csv"
+Content-Type: text/csv
+
+< ./dummy_transactions.csv
+---bound--

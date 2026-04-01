@@ -1,4 +1,4 @@
-from .spending_pattern_using_std import get_spending_pattern
+from .financial_activity_using_std import get_financial_activity
 
 
 class Helper:
@@ -61,22 +61,23 @@ You have completed a total of 40 transactions, with an overall average value of 
 
 class InterpretationEngine(Helper):
     
-    def __init__(self, data, currency:str, spending_pattern:str):
+    def __init__(self, data, currency:str, financial_activity:str):
 
         # destructuring the data parameter
         self.amount = data.get("amount", None)
         self.category = data.get("category", None)
+        self.flagged = data.get("flagged", None)
         self.transaction_dates = data.get("transaction_dates", None)
         self.transaction_type = data.get("transaction_type", None)
         self.amount_by_date = data.get("amount_by_date", None)
 
         # others
         self.currency = currency
-        self.spending_pattern = str(spending_pattern).lower()
+        self.financial_activity = str(financial_activity).lower()
         self.date_time_features = ["hour", "month",  "day_name", "month_day"]
         self.agg_params = ["mean", "min", "max", "count"]
 
-    
+     
     def interpret_amount(self) -> str:
         """
         This method interpret the amount feature.
@@ -94,7 +95,7 @@ class InterpretationEngine(Helper):
         percentile_50 = amount["50%"]
         percentile_75 = amount["75%"]
         
-        paragraph = f""" You have a total of {count} transactions with an average transaction amount of {currency} {mean}. However, your spending habits were {self.spending_pattern},  with a typical swing of {currency} {std} between transactions. When looking at the middle of your spending habits, your typical transaction value is {currency} {percentile_50}, 25% of your transactions are for {currency} {percentile_25} or less while 75% of your transactions are for {currency} {percentile_75} or less. Lastly, your lowest and highest transaction amounts are {currency} {min_} and {currency} {max_} respectively. """
+        paragraph = f""" You have a total of {count} transactions with an average transaction amount of {currency} {mean}. However, your financial activity were {self.financial_activity},  with a typical swing of {currency} {std} between transactions. When looking at the middle of your financial activity, your typical transaction value is {currency} {percentile_50}, 25% of your transactions are for {currency} {percentile_25} or less while 75% of your transactions are for {currency} {percentile_75} or less. Lastly, your lowest and highest transaction amounts are {currency} {min_} and {currency} {max_} respectively. """
 
         return paragraph
 
@@ -114,9 +115,9 @@ class InterpretationEngine(Helper):
         percentile_25 = amount["25%"]
         percentile_50 = amount["50%"]
         percentile_75 = amount["75%"]
-        location_spending_pattern = get_spending_pattern(std, mean)
+        location_financial_activity = get_financial_activity(std, mean)
 
-        paragraph = f""" Based on the latest transaction data for {location} {location_type}, there have been {count} transactions recorded. The average transaction amount is {currency} {mean} with a typical swing of {currency} {std} between transactions which is {str(location_spending_pattern).lower()}. Transaction amounts range from a minimum of {currency} {min_} to a maximum of {currency} {max_}. 25% of total transactions in {location} have a transaction amount of  {currency} {percentile_25} or less, 50% of total transactions in {location}  have a transaction amount of  {currency} {percentile_50} or less, and 75% of total transactions in {location}  have a transaction amount of  {currency} {percentile_75} or less. """
+        paragraph = f""" Based on the latest transaction data for {location} {location_type}, there have been {count} transactions recorded. The average transaction amount is {currency} {mean} with a typical swing of {currency} {std} between transactions which is {str(location_financial_activity).lower()}. Transaction amounts range from a minimum of {currency} {min_} to a maximum of {currency} {max_}. 25% of total transactions in {location} have a transaction amount of  {currency} {percentile_25} or less, 50% of total transactions in {location}  have a transaction amount of  {currency} {percentile_50} or less, and 75% of total transactions in {location}  have a transaction amount of  {currency} {percentile_75} or less. """
 
         return paragraph
     
@@ -268,13 +269,71 @@ class InterpretationEngine(Helper):
         """
         This method interpret the category summary stat
         """
-        pass
+        data = self.category
+        min_ = data["min"]
+        max_ = data["max"]
+
+        total = data["total"]
+        max_only = data["max_only"]
+        relative_min = data["relative_min"]
+        relative_max = data["relative_max"]
+
+        max_section = f"Your most active transaction category is {max_[0]}, appearing {max_[1]} times ({relative_max} % of your total transactions)."
+        min_section = f"In contrast, {min_[0]} saw the least activity with only {min_[1]} recorded transaction ({relative_min} % of your total transactions)."
+
+        paragraph = max_section if max_only else max_section+" " + min_section
+        
+        return paragraph
+    
+    def interpret_flagged(self):
+        """
+        This method interpret the flagged summary stat
+        """
+        data = self.flagged
+        min_ = data["min"]
+        max_ = data["max"]
+
+        total = data["total"]
+        max_only = data["max_only"]
+        relative_min = data["relative_min"]
+        relative_max = data["relative_max"]
+        print(data)
+        action_word = "anomalous" if max_[0] == True else "normal"
+
+        max_section = f"From the review of your transaction activities. Out of {total} transactions, {max_[1]} transactions ({relative_max}%) have been flagged as {action_word} transactions "
+
+        min_section = f"while {min_[1]} transactions ({relative_min}%)  were processed normally."
+
+        paragraph = max_section+"." if max_only else max_section+" " + min_section
+        
+        return paragraph
+    
+
     def interpret_transaction_type(self):
         """
-        This method interpret the transaction type summary stat
+        This method interpret the transaction_type summary stat
         """
-        pass
+        data = self.transaction_type
+        min_ = data["min"]
+        max_ = data["max"]
 
+        total = data["total"]
+        max_only = data["max_only"]
+        relative_min = data["relative_min"]
+        relative_max = data["relative_max"]
+
+
+        max_section = f"From the review of your transaction activities. Out of {total} transactions, {max_[1]} transactions ({relative_max}%) are {str(max_[0]).lower()} transactions "
+
+        min_section = f"while {min_[1]} transactions ({relative_min}%) are {str(min_[0]).lower()} transaction."
+
+        paragraph = max_section+"." if max_only else max_section+" " + min_section
+        
+        return paragraph
+
+
+ 
+    
     def interpret_all(self):
         """
         
@@ -284,6 +343,10 @@ class InterpretationEngine(Helper):
         result["amount"] = self.interpret_amount()
         result["transaction_dates"] = self.interpret_transaction_dates()
         result["amount_by_date"] = self.interpret_amount_by_date()
+        result["category"]=self.interpret_category()
+        result["flagged"]=self.interpret_flagged()
+        result["transaction_type"]=self.interpret_transaction_type()
+
 
         return result
 

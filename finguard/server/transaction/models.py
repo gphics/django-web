@@ -49,7 +49,10 @@ class Transaction(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
-        indexes= [models.Index(fields = ["-created_at"])]
+        indexes= [
+            models.Index(fields=["country", "state", "city"]),
+            models.Index(fields = ["-created_at"])
+            ]
 
 
 class CircleMembership(models.Model):

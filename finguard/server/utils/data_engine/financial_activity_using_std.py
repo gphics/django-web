@@ -1,6 +1,6 @@
 import numpy as np
 
-def get_spending_pattern(std:int, mean:int):
+def get_financial_activity(std:int, mean:int):
 
     # getting percentages
     fifteen = np.round(15/100*mean, 2)

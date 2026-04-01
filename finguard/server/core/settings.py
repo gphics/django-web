@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -37,7 +38,8 @@ CUSTOM_APPS = [
 ]
 THIRD_PARTY_APPS = [
     "rest_framework",
-    "rest_framework.authtoken"
+    "rest_framework.authtoken",
+    "django_filters"
 ]
 DJANGO_APPS = [
     'django.contrib.admin',
@@ -46,6 +48,7 @@ DJANGO_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
 ]
 INSTALLED_APPS =  DJANGO_APPS + THIRD_PARTY_APPS + CUSTOM_APPS
 
@@ -136,3 +139,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+
+# SETTING MEDIA
+
+MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "media")
+
+MEDIA_UR = "/media/"

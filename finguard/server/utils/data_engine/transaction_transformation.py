@@ -47,17 +47,36 @@ class TransformationUtils:
                 max:[actual_value, freq]
 
                 min:[actual_value, freq]
-        """
-        freq = self.df[feature].value_counts()
 
-        # if only one unique value exist for the feature, in which max is the same as min
+                max_only:bool
+
+                relative_max: int |float
+                relative_min: int |float
+                total:int
+        """
+        feature_data = self.df[feature]
+        freq = feature_data.value_counts()
+
+        # getting data length
+        total_feature_count = feature_data.shape[0]
+
+        # if only one unique value exist for the feature, in which max is the same as min, then show only the max
         max_only = True if len(freq.index) < 2 else False
-        
+
+        # if the max and min value occurences are the same, then show only the max
+        max_only = False if str(freq.idxmax()) != str(freq.idxmin()) else True
+
+        # generating the result 
         result = {
             "max":[str(freq.idxmax()), int(freq.max())],
             "min":[str(freq.idxmin()), int(freq.min())],
             "max_only" : max_only  # for interpretation purpose only
         }
+   
+        # adding relative value for interpretation purpose
+        result["relative_max"] = self.get_percentage_prop(total_feature_count, result["max"][1])
+        result["relative_min"] = self.get_percentage_prop(total_feature_count, result["min"][1])
+        result["total"] = total_feature_count
         return result
 
     def amount_deep_dive(self, feature:str):
@@ -165,11 +184,18 @@ class MainEngine(TransformationUtils):
         """
         return self.get_feature_min_max(feature)
     
-    def get_raw_transaction_amount(self):
+    def get_raw_transaction_amount(self, n:int|None=None):
         """
         This method returns the self.df['amount']
+
+        Param:
+            n: The number of transaction amount to return
         """
-        return self.df["amount"]
+        if not n:
+            return self.df["amount"]
+        
+        # if n is provided
+        return self.df["amount"].sample(n=n)
     
     def get_transaction_amount_mean(self):
         """

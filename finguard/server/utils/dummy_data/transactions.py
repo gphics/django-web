@@ -6,12 +6,16 @@ from pathlib import Path
 
 
 
-
+base_dir =str(Path(__file__).resolve().parent)
 fake  = Faker()
 
 total_number = 40
 
-def generate_random_transactions():
+def generate_random_transactions(file_path: str |None =None) -> list | None:
+    """
+    This function generate random transactions and export it as a list unless file_path is provided which would make this function generate a csv file for the transactions.
+
+    """
     max_list = np.random.randint(3000, 10000, size=50)
     min_list = np.random.randint(500, 2000, size=50)
     # generating fake past random transaction datetimes
@@ -23,15 +27,21 @@ def generate_random_transactions():
     # generating category
     category = np.random.randint(1, 13, size=total_number)
 
+    transaction_types = ["DEBIT", "CREDIT"]
+
     transactions = pd.DataFrame()
 
     # populating the transactions df
     transactions["amount"] = amounts
     transactions["transaction_date"] = transaction_date
     transactions["category"] = category
+    transactions["transaction_type"] = np.random.choice(transaction_types, size=total_number)
 
     transactions["transaction_date"] = transactions["transaction_date"].astype(str)
 
+    if file_path:
+        transactions.to_csv(file_path, index=False)
+        return
 
     transactions = transactions.to_dict(orient="records")
 
@@ -44,7 +54,7 @@ url = "http://127.0.0.1:8000/transaction/"
 def transaction_creation():
     # Authorizations ...
     tokens = []
-    base_dir =str(Path(__file__).resolve().parent)
+    
     with open(f"{base_dir}/tokens.txt", "r+") as file:
         tokens = file.read().splitlines()
     
@@ -54,3 +64,9 @@ def transaction_creation():
         headers = {"Authorization": f"Token {token}"}
         for transaction in transactions:
             send_request(url, payload=transaction, headers = headers)
+
+
+
+# file_path = f"{base_dir}/dummy_transactions.csv"
+
+# generate_random_transactions(file_path)

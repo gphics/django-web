@@ -1,3 +1,4 @@
 from .transaction_transformation import MainEngine
 from .summary_interpretation import InterpretationEngine
-from .spending_pattern_using_std import get_spending_pattern
+from .financial_activity_using_std import get_financial_activity
+from .multiple_transactions import TransactionFileProcesor

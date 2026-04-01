@@ -5,13 +5,18 @@ from django.conf import settings
 
 # Create your models here.
 class Profile(models.Model):
-    class SPENDING_ENUM(models.TextChoices):
+    class FINANCIAL_ACTIVITY_ENUM(models.TextChoices):
         CONSISTENT = "CONSISTENT", "Very Consistent"
         MODERATE = "MODERATE", "Fairly Regular"
         FLUNCTUATING = "FLUNCTUATING","Flunctuating"
 
-    spending_pattern = models.CharField(max_length=30,choices=SPENDING_ENUM, default=SPENDING_ENUM.CONSISTENT)
+    class USER_TYPE_ENUM(models.TextChoices):
+        INDIVIDUAL = "INDIVIDUAL", "individual"
+        ENTREPRENEUR = "ENTREPRENEUR", "entrepreneur"
+
+    financial_activity = models.CharField(max_length=30,choices=FINANCIAL_ACTIVITY_ENUM, default=FINANCIAL_ACTIVITY_ENUM.CONSISTENT)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
+    user_type = models.CharField(max_length=20, choices=USER_TYPE_ENUM, default=USER_TYPE_ENUM.INDIVIDUAL)
     
     # country, state, city -> Used for transaction creation
     country = models.CharField(max_length=30, null=True)
