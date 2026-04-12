@@ -24,7 +24,7 @@ for user in usernames:
     dummy_user.append({"username":user, "password":f"12345{user[:3]}"})
 
 def user_creation():
-    for user in dummy_user:
+    for user in dummy_user[:1]:
         result = send_request(url, user)
         token = result["data"]["msg"]["token"]
 
@@ -35,3 +35,6 @@ def user_creation():
         file.flush()
 
         os.fsync(file.fileno())
+
+
+# user_creation()

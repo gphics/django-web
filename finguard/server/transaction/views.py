@@ -18,10 +18,13 @@ from django.contrib.auth.models import User
 
 # CATEGORY...
 class CategoryCRUDView(APIView):
+    """
+    # This is the category CRUD class based view.
+    """
 
     def get(self, request):
         """
-        This route returns all categories
+        # This route retrieves all categories.
         """
         serializer = CategorySerializer(instance = Category.objects.all(), many = True)
         return Response(generate_res({"msg": serializer.data}))
@@ -29,7 +32,13 @@ class CategoryCRUDView(APIView):
        
     def post(self, request):
         """
-        This is the creation view for the category creation
+        # This is the creation view for the category model.
+
+        ## Request data:
+            * title:str
+
+        ## Return:
+            * success message.
         """
         title = request.data.get("title", None)
 
@@ -65,23 +74,23 @@ class TransactionCRUDView(APIView):
     
     def get(self, request):
         """
-        This view is responsible for reading user transactions
+        # This view is responsible for retrieving user transactions
 
-        Request Query:
-            id?:int --> transaction id
+        ## Request Query:
+            * id?:int --> transaction id
 
-            filtering params:
-                flagged: bool (True| False)
-                transaction_type: (DEBIT | CREDIT)
-                category: title(str)
-                min_amount:int
-                max_amount:int
-                month: int
-                year: int
+            * filtering params?:
+                + flagged: bool (True| False)
+                + transaction_type: (DEBIT | CREDIT)
+                + category: title(str)
+                + min_amount:int
+                + max_amount:int
+                + month: int
+                + year: int
 
-        Return:
-            If id, transaction with the id is returned 
-            Else, if any filtering parameter is provided, it returns the filtered data else all user transactions.
+        ## Return:
+            + If id, transaction with the id is returned 
+            + Else if any filtering parameter is provided, it returns the filtered data else all user transactions.
         """
         transaction_id = request.query_params.get("id", None)
         try:
@@ -137,17 +146,18 @@ class TransactionCRUDView(APIView):
     def post(self, request):
         
         """
-        This view is responsible for creating transactions
+        # This view is responsible for creating transactions
 
-        Request data:
-            amount: int
-            category: category id(int)
-            transaction_date?: datetime(str)
-
-            # for multiple transaction update
-            transaction_file?: a csv file
-
+        ## Request data:
+            -  amount: int
+            -  category: category id(int)
+            -  transaction_date?: datetime(str)
+            -  transaction_file?: a csv file. for multiple transactions upload.
+       
+        ## Return:
+            - success message if no error.
         """
+
 
         # getting transaction file
         transaction_file = request.data.get("transaction_file", None)
@@ -205,8 +215,12 @@ class TransactionCRUDView(APIView):
             
     def put(self, request):
         """
-        This view is for updating the transaction object
+        # This view is for updating the transaction object.
 
+        ## Request query:
+            * id:int -> transaction id
+        ## Return:
+            * success message if no error
         """
         try:
             transaction_id = request.query_params.get("id", None)
@@ -222,14 +236,16 @@ class TransactionCRUDView(APIView):
         except Exception as e:
             return Response(generate_res(err={"msg": str(e)}), status=status.HTTP_400_BAD_REQUEST)
         
-  
-    
+
     def delete(self, request):
         """
-        This view is for deleting the transaction
+        # This view is for deleting the transaction.
 
-        Request param:
+        ## Request param:
             id : transaction id(int)
+
+        ## Return:
+            + success message if no error.
         """
         transaction_id = request.query_params.get("id", None)
         trans = Transaction.objects.filter(pk = transaction_id)
@@ -319,26 +335,26 @@ def handle_comparisons(location_amount, location_amount_mean:float, user_transfo
 @api_view(["GET"])
 def interpret_summary_statistics(request):
     """
-    This view is responsible for interpreting the summary statistics.
-    Including:
-        amount
-        amount(deep)
-        transaction_date
+    # This view is responsible for interpreting the summary statistics.
+        Including:
+            + amount
+            + amount(deep)
+            + transaction_date
+        For users and his/her location.
 
-    For users and his/her location.
+    ## It also support filtering that is applied to the user and locations of transactions.
 
-    It also support filtering that is applied to the user and locations of transactions.
+        - filtering params:
+                    + flagged: bool (True| False)
+                    + transaction_type: (DEBIT | CREDIT)
+                    + category: title(str)
+                    + min_amount:int
+                    + max_amount:int
+                    + month: int
+                    + year: int
 
-    filtering params:
-                flagged: bool (True| False)
-                transaction_type: (DEBIT | CREDIT)
-                category: title(str)
-                min_amount:int
-                max_amount:int
-                month: int
-                year: int
-
-    Lastly, this function split transactions base on user location data 
+    ## Return:
+        * Interpreted information gotten from the data
         
     """
 
@@ -368,10 +384,11 @@ def interpret_summary_statistics(request):
 
     # serializing the user transactions
     all_transactions = ShallowTransactionReadSerializer(instance = user_transactions, many = True)
-
+    
 
     transformer = DataTransformationEngine(all_transactions.data)
-
+   
+   
 
     # json data of the summary_statistics
     json_data = {
@@ -451,10 +468,13 @@ class CircleCRUDView(APIView):
 
     def get(self, request):
         """
-        This method returns a list of all circles a user is in if id(circle id) request param isnt provided else it returns a circle information
+        # This method returns a list of all circles a user is in if id(circle id) request param isnt provided else it returns a circle information
 
-        Request param:
-            id?: int(circle id)
+        ## Request param:
+            - id?: int(circle id)
+
+        ## Return: 
+            - Circle(s) if no error
         """
 
         # getting circle id
@@ -476,7 +496,7 @@ class CircleCRUDView(APIView):
             # checking user member validity
             is_member = circle.is_member(request.user)
 
-            # if the auth user is not a member
+             # if the auth user is not a member
             if not is_member:
                 return Response(generate_res(err={"msg":"You are not a member of this circle"}), status=status.HTTP_403_FORBIDDEN)
             
@@ -490,11 +510,14 @@ class CircleCRUDView(APIView):
 
     def post(self, request):
         """
-        This view is responsible for creating the circle instance
+        # This view is responsible for creating the circle.
 
-        Request data:
-            name: str(circle name)
-            description?: text
+        ## Request data:
+            + name: str(circle name)
+            + description?: text
+
+        ## Return:  
+            + success message if no error
         """
         
         serializer = CircleSerializer(data = request.data)
@@ -524,14 +547,20 @@ class CircleCRUDView(APIView):
 
     def put(self, request):
         """
-        This method is for updating the name and description of a circle and only the admin circle member is authorized to perform this operation
+        # This method is for updating the name and description of a circle.
+         
+        ## Authorization:
+            - Circle admin only
 
-        Request param:
-            id(int): circle id
+        ## Request query:
+            - id(int): circle id
 
-        Request data:
-            name?: str
-            description?:str
+        ## Request data:
+            - name?: str
+            - description?:str
+
+        ## Return:
+            - success message if no error
         
         """
         circle_id = request.query_params.get("id", None)
@@ -566,14 +595,16 @@ class CircleCRUDView(APIView):
     
     def delete(self, request):
         """
-        This method is for deleting the circle and only the owner of the circle is authorized to perform this operation
+        #This method is for deleting the circle.
 
-        Request param:
-            id(int): circle id
+        ## Authorization:
+            - Circle owner only
 
-        Request data:
-            name?: str
-            description?:str
+        ## Request query:
+            - id(int): circle id
+
+        ## Return:
+            - success message if no error
         
         """
         circle_id = request.query_params.get("id", None)
@@ -604,14 +635,17 @@ class CircleCRUDView(APIView):
 @api_view(["PUT"])
 def add_circle_member(request, id:int):
     """
-    This view is responsible for adding or updating(role) cirlce member
+    # This view is responsible for adding or updating(role) circle member
 
-    Request Param:
-        id:int -> circle id
+    ## Request Param:
+        * id:int -> circle id
 
-    Request data:
-        user(id):int
-        role?: MEMBER | ADMIN
+    ## Request data:
+        * user(id):int
+        * role?: MEMBER | ADMIN
+
+    ## Return:
+        * success message if no error
     """
 
     # getting the auth user
@@ -668,13 +702,16 @@ def add_circle_member(request, id:int):
 @api_view(["DELETE"])
 def remove_circle_member(request, id):
     """
-    This view is responsible for removing circle member by the circle admin
+    # This view is responsible for removing circle member by the circle admin
 
-    Request param:
-        id:int -> circle id
+    ## Request param:
+        + id:int -> circle id
 
-    Request query:
-        user:int -> circle member user id
+    ## Request query:
+        + user:int -> circle member user id
+    
+    ## Return:
+        + success message if no error
 
     """
     try:
@@ -724,10 +761,13 @@ def remove_circle_member(request, id):
 def leave_circle(request, id:int):
 
     """
-    This view is for autheticated user who is a circle member to leave the circle.
+    # This view is for autheticated user who is a circle member to leave the circle.
 
-    Request param:
-        id:int -> circle id
+    ## Request param:
+        * id:int -> circle id
+
+    ## Return:
+        * success message if no error
     """
 
     try:
@@ -765,10 +805,13 @@ def leave_circle(request, id:int):
 @api_view(["GET"])
 def rank_circle_members(request, id:int):
     """
-    This view is resposible for ranking the circle members base on a specific summary statistics paramter with the default beign mean transaction amount.
+    # This view is resposible for ranking the circle members base on a specific summary statistics paramter with the default beign mean transaction amount.
 
-    Request query:
-        stat?:str -> [mean(default), min, max, count, std] 
+    ## Request query:
+        - stat?:str -> [mean(default), min, max, count, std] 
+
+    ## Return:
+        - a sorted list of circle members
     """
     try:
         # getting the stat query param

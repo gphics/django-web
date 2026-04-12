@@ -292,17 +292,16 @@ class InterpretationEngine(Helper):
         data = self.flagged
         min_ = data["min"]
         max_ = data["max"]
-
+       
         total = data["total"]
         max_only = data["max_only"]
         relative_min = data["relative_min"]
         relative_max = data["relative_max"]
-        print(data)
-        action_word = "anomalous" if max_[0] == True else "normal"
+        action_word = "anomalous" if max_[0] == 'True' else "normal"
 
         max_section = f"From the review of your transaction activities. Out of {total} transactions, {max_[1]} transactions ({relative_max}%) have been flagged as {action_word} transactions "
 
-        min_section = f"while {min_[1]} transactions ({relative_min}%)  were processed normally."
+        min_section = f"while {min_[1]} transactions ({relative_min}%) are normal transactions."
 
         paragraph = max_section+"." if max_only else max_section+" " + min_section
         

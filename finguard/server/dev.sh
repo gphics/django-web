@@ -21,13 +21,13 @@ function run_server(){
     then
         echo "PORT: $PORT is free"
         echo "STARTING THE SERVER AT PORT:$PORT"
-        python manage.py runserver $PORT
+        python manage.py runserver $PORT 
     else
         echo "PORT: $PORT is busy"
         echo "KILLING PORT:$PORT"
         sudo fuser -k "$PORT"/tcp
         echo "STARTING THE SERVER AT PORT:$PORT"
-        python manage.py runserver $PORT
+        python manage.py runserver $PORT 
     fi
 }
 

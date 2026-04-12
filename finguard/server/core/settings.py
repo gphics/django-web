@@ -9,10 +9,13 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
-
+from dotenv import load_dotenv
 from pathlib import Path
 import os
+from celery.schedules import crontab
 
+# making the env variables accessible
+load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -34,12 +37,15 @@ ALLOWED_HOSTS = []
 CUSTOM_APPS = [
     "account",
     "transaction",
-    "ml"
+    "ml",
+    "media_app"
 ]
 THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
-    "django_filters"
+    "django_filters",
+    "drf_spectacular",
+    "storages"
 ]
 DJANGO_APPS = [
     'django.contrib.admin',
@@ -119,7 +125,11 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated'
-    ]
+    ],
+    'DEFAULT_FRAMEWORK':{
+        'DEFAULT_SCHEMA_CLASS': 'drf_spectatcular.openapi.AutoSchema'
+    },
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 
@@ -141,8 +151,28 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 
-# SETTING MEDIA
+CELERY_BEAT_SCHEDULE = {
+    "ml-cleanup":{
+        "task":"ml.tasks.retrain_available_models",
 
-MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "media")
+        # running the cleanup every 12:00 with 3 days interval
+        "schedule": crontab(minute=0, hour=0, day_of_month="*/3"),
 
-MEDIA_UR = "/media/"
+        # for test purpose
+        # "schedule": crontab(minute="*/2")
+    }
+}
+
+CELERY_BROKER_TRANSPORT_OPTIONS = {
+    "visibility_timeout":3600  * 5 # 5 hours
+}
+
+
+# AWS S3 SETTINGS
+AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME")
+AWS_S3_REGION_NAME = os.environ.get("AWS_S3_REGION_NAME")
+
+# Tell Django to use S3 for Media (user uploads)
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"

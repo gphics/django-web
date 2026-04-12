@@ -63,6 +63,7 @@ def transaction_creation():
         transactions = generate_random_transactions()
         headers = {"Authorization": f"Token {token}"}
         for transaction in transactions:
+        # for transaction in transactions[:2]:
             send_request(url, payload=transaction, headers = headers)
 
 
@@ -70,3 +71,6 @@ def transaction_creation():
 # file_path = f"{base_dir}/dummy_transactions.csv"
 
 # generate_random_transactions(file_path)
+# for i in range(10):
+#     transaction_creation()
+# transaction_creation()

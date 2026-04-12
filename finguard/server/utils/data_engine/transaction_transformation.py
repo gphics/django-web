@@ -262,4 +262,32 @@ class MainEngine(TransformationUtils):
         return self.translate_significance(p_value)
        
     
+    def get_df_copy_to_list(self, drop_cols:list=[]):
+        """
+        @ This method returns a copy of the transaction df.
+
+        ## Params:
+            - drop_cols?: columns to drop from the final output
+
+        # Note; the following columns are dropped by default:
+            - user
+            - transaction_date
+            - created_at
+            - updated_at
+            - country
+            - state
+            - city
+            - description
+            - day_name
+
+        """
+        try:
+            default_cols_to_be_dropped = ["user", "transaction_date", "created_at","updated_at", "country", "state", "city", "description", "day_name"]
+            cols_to_drop = [*default_cols_to_be_dropped, *drop_cols]
+            copied_df = self.df.copy()
+
+
+            return copied_df.drop(cols_to_drop, axis=1).to_dict(orient="records")
+        except Exception as e:
+            raise e
         

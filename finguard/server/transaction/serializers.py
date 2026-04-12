@@ -4,28 +4,9 @@ from .models import Category, Transaction, Circle, CircleMembership
 from rapidfuzz import process as text_processor
 from babel.numbers import get_currency_symbol
 from account.models import Profile
-
+from media_app.serializers import MediaSerializer
+from account.serializers import UserSerializer
 User = get_user_model()
-class UserSerializer(serializers.ModelSerializer):
-    """"
-    This serializer is for the creation of the user only
-    """
-   
-    class Meta:
-        model = User
-        fields = "__all__"
-        # fields = ["password", "username"]
-        extra_kwargs = {
-            "password":{"write_only":True}
-        }
-
-    def validate_password(self, value):
-        if len(value) < 6:
-            raise serializers.ValidationError("Password length must be greater than 5")
-        return value
-        
-    def create(self, validated_data):
-        return User.objects.create_user(**validated_data)
 
 class CategorySerializer(serializers.ModelSerializer):
 
@@ -213,7 +194,7 @@ class CircleMemberProfileSerializer(serializers.ModelSerializer):
     """
     A specially made profile serializer for circle. It exclude the user field on the profile
     """
-  
+    media = MediaSerializer(read_only = True)
     class Meta:
         model = Profile
         exclude = ["user"]
@@ -233,6 +214,7 @@ class CircleListSerializer(serializers.ModelSerializer):
     This serializer is for reading the circle object and it goes deep to bring out the details of the members of a circle
     """
     members = serializers.SerializerMethodField()
+    media = MediaSerializer(read_only = True)
     class Meta:
         model = Circle
         fields = "__all__"

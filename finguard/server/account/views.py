@@ -20,13 +20,14 @@ from babel.core import get_global
 @permission_classes([AllowAny])
 def create_user(request):
     """
-    This is the user and default profile creation view. It 
+    # This is the user and default profile creation view. 
 
-    Request Data:
-        username
-        password
-    Return:
-        It return the user auth token
+    ## Request Data:
+        - username
+        - password
+        
+    ## Return:
+        - It return the user auth token
     """
 
     # verifying if auth user already exists
@@ -56,14 +57,14 @@ def create_user(request):
 @permission_classes([AllowAny])
 def auth_user(request):
     """
-    The login view
+    # The login view
 
-    Request Data:
-        username
-        password
+    ## Request Data:
+        + username
+        + password
 
-    Return:
-        auth token
+    ## Return:
+        + auth token
     """
     username = request.data.get("username", None)
     password = request.data.get("password", None)
@@ -85,17 +86,17 @@ def auth_user(request):
 
 class ProvileView(APIView):
     """
-    This class view handles all CRUD ops for both profile and user model
+    # This class view handles all CRUD ops for both profile and user model
     """
     def get(self, request):
         """
-        This is the read view. It get the profile data of the logged in user
+        # This is the read view.
 
-        Request param:
-            search (optional): user id (int) | all (to get all users)
+        ## Request query:
+            * search?: user id (int) | all (to get all users)
 
-        Return:
-            user(s) profile
+        ## Return:
+            * user(s) profile
         """
         search = request.query_params.get("search", None)
         if not search:
@@ -111,11 +112,16 @@ class ProvileView(APIView):
                 return Response(generate_res(err={"msg": str(e)}), status=status.HTTP_404_NOT_FOUND)
             
             serializer = ProfileSerializer(instance = Profile.objects.get(user = user))
-        return Response(generate_res({"msg":serializer.data}))
+        # return Response(generate_res({"msg":serializer.data}))
+        return Response(serializer.data)
 
     def put(self, request):
         """
-        This is update route for basic information update for profile and user. email, username and password cannot be changed here.
+        # This is the update route for basic information update for profile and user. 
+
+
+        ## Note:
+            email, username and password cannot be changed here.
         """
 
         # previous user info
@@ -146,7 +152,7 @@ class ProvileView(APIView):
 @api_view(["GET"])
 def get_all_currencies(request):
     """
-    ShallowThis view returns all currencies codes and symbols
+    # This view returns all currencies codes and symbols
 
     """
 
@@ -154,17 +160,18 @@ def get_all_currencies(request):
 
     return Response(generate_res({"msg": all_currencies}))
     
+
 @api_view(["PUT"])
 def update_password(request):
     """
-    This view is for updating the password
+    #This view is for updating the user password
 
-    Request data:
-        old_password
-        new_password
+    ## Request data:
+        - old_password:str
+        - new_password:str
 
-    Return:
-        auth token
+    ## Return:
+        - success message.
     """
     user = request.user
     old_password  =  request.data.get("old_password", None)
@@ -198,12 +205,12 @@ def update_password(request):
 @api_view(["PUT"])
 def update_username(request):
     """
-    This view is for updating the username
+    # This view is for updating the username.
 
-    Request data:
-        username
-    Return:
-        auth token
+    ## Request data:
+        + username:str
+    ## Return:
+        + success message.
     """
     username = request.data.get("username", None)
     if not username:
@@ -225,13 +232,13 @@ def update_username(request):
 @api_view(["PUT"])
 def update_email(request):
     """
-    This view is for updating the user email
+    # This view is for updating the user email.
 
-    Request data:
-        email
+    ## Request data:
+        - email
 
-    Return:
-        auth token
+    ## Return:
+        - success message.
     """
     email = request.data.get("email", None)
     if not email:

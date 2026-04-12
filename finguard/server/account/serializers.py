@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from . models import Profile
 from rapidfuzz import process as text_processor, fuzz
 from babel.numbers import get_currency_symbol
-
+from media_app.serializers import MediaSerializer
 User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
@@ -33,6 +33,8 @@ class ProfileSerializer(serializers.ModelSerializer):
     This serializer is for the creation and listing of profiles
     """
     user = UserSerializer(read_only = True)
+
+    media = MediaSerializer(read_only=True)
     class Meta:
         model = Profile
         fields =  "__all__"
