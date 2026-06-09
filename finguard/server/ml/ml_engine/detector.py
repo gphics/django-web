@@ -3,7 +3,7 @@ import joblib
 import pandas as pd
 from sklearn.ensemble import IsolationForest
 from feature_engine.encoding import CountFrequencyEncoder
-from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import OneHotEncoder, RobustScaler
 from sklearn.compose import ColumnTransformer
 
 class EngineUtils:
@@ -12,10 +12,9 @@ class EngineUtils:
     """
 
     # default variables
-    model_store_dir_name = "model_store"
-    base_dir = Path(__file__).resolve().parent.parent
+
     
-    def __init__(self, data:list, user_id:int, retrain:bool=False):
+    def __init__(self, data:list):
         """
         # Conditions for a retrain:
             - First model creation: the retrain serves as a guide so that the new model can be saved locally. Just for direction.
@@ -24,27 +23,19 @@ class EngineUtils:
         
         """
         self.raw_df = pd.DataFrame(data)
-       
-        self.user_model_file_name = f"user_{user_id}_model.joblib"
-        self.user_model_file_path  = f"{self.base_dir}/{self.model_store_dir_name}/{self.user_model_file_name}"
 
-        # deleting the model if retrain is necessary
-        if retrain:
-            self.delete_model()
+        # converting amount to int
+        self.raw_df["amount"] = self.raw_df["amount"].astype(int)
 
+    
         # creating the encoder
         self.generate_feature_transformer()
  
-        # retrieving / initializing the model
+        # initializing the model
     
-        if self.verify_user_model():
-            self.model = self.retrieve_model()
-          
-        else:
-            self.model = IsolationForest()
+        self.model = IsolationForest(contamination=0.1, random_state=42, max_features=0.5, max_samples=self.raw_df.shape[0])
+        
        
-
-
     def remove_df_id(self, data:pd.DataFrame |None =None):
         """
         This method removes the id col from the data, save it as self.target_id and return the df that remains.
@@ -64,50 +55,7 @@ class EngineUtils:
 
         return target_df
 
-
-    def verify_user_model(self) -> bool:
-        """
-        This method checks if the user already have his model saved before
-        """
-        file_path = Path(self.user_model_file_path)
-
-        if file_path.exists():
-            return True
-        return False
-
-
-    def save_model(self):
-        """
-        Savig the model
-        """
-        try:
-            joblib.dump(self.model, self.user_model_file_path)
-        except Exception as e:
-            print(str(e))
-        
-    def retrieve_model(self) -> IsolationForest:
-        """
-        Retrieving saved model
-        """
-        try:
-            # getting the saved model
-            user_model = joblib.load(self.user_model_file_path)
-
-            # saving the loaded data
-            self.model = user_model
-
-            return user_model
-        except Exception as e:
-
-            return None
-        
-    def delete_model(self):
-        file = Path(self.user_model_file_path)
-
-        # deleting the model file
-        file.unlink(missing_ok=True)
     
-
     def generate_feature_transformer(self):
         """
         Generates the encoder.
@@ -119,7 +67,9 @@ class EngineUtils:
 
         transformers = [
             ("ohe", OneHotEncoder(sparse_output=False, drop="if_binary",categories=[["CREDIT", "DEBIT"]]), ["transaction_type"]),
-            ("freq_enc", CountFrequencyEncoder(), ["category"])
+            ("freq_enc", CountFrequencyEncoder(), ["category"]),
+            ("scaling", RobustScaler(), ['amount', 'month', 'hour', 'month_day', 'weekday'])
+            
         ]
 
         ct = ColumnTransformer(transformers, verbose_feature_names_out=False, remainder="passthrough")
@@ -134,6 +84,8 @@ class EngineUtils:
         
         # saving the encoder
         self.ct = ct
+
+
 
 
 class AnomalyDetectionEngine(EngineUtils):
@@ -165,13 +117,12 @@ class AnomalyDetectionEngine(EngineUtils):
         """
         training the model, if it's just newly created
         """
-        if not self.verify_user_model():
+        
 
-            # training ...
-            self.model.fit(self.X)
+        # training ...
+        self.model.fit(self.X)
 
-            # saving the model locally
-            self.save_model()
+        
 
     def predict(self, data=None):
         """
@@ -192,4 +143,28 @@ class AnomalyDetectionEngine(EngineUtils):
         result["id"] = self.target_id
         result["flagged"] = (predictions == -1)
         
+        # return result
         return result.to_dict(orient="records")
+
+
+# script_dir = Path(__file__).resolve().parent
+# df = pd.read_csv(script_dir/"guest.csv")
+# df = df.drop(columns=["Unnamed: 0"])
+# print(df)
+
+# print(df[df["id"].isin([43,42,17,13,7]) ])
+# print(df.nsmallest(2, columns=["amount"]))
+
+# model = AnomalyDetectionEngine(df, 166)
+
+# model.train_model()
+
+
+# pred = model.predict()
+
+# print(pred[pred["flagged"] == True ])
+
+# print(df)
+
+# print(model.X.head())
+# print(model.X.columns.to_list())

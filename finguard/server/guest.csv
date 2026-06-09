@@ -1,0 +1,43 @@
+category,amount,transaction_type,month,hour,month_day,weekday
+Savings & Investing,655544,DEBIT,6,13,7,6
+Transportation,799876,DEBIT,6,13,7,6
+Housing,6797,DEBIT,5,13,13,2
+Food & Groceries,4350,DEBIT,5,12,23,5
+Savings & Investing,3716,DEBIT,5,20,30,5
+Debt Payments,2500,CREDIT,6,16,5,4
+Entertainment,8004,DEBIT,6,1,7,6
+Gifts & Donations,4191,DEBIT,5,7,24,6
+Personal Care,4496,CREDIT,5,6,28,3
+Transportation,1893,CREDIT,6,18,2,1
+Food & Groceries,6122,CREDIT,5,15,8,4
+Debt Payments,2945,CREDIT,5,9,23,5
+Gifts & Donations,3108,DEBIT,6,6,3,2
+Gifts & Donations,6645,DEBIT,5,22,30,5
+Food & Groceries,4343,CREDIT,5,18,25,0
+Housing,1555,DEBIT,6,4,4,3
+Transportation,1772,DEBIT,5,14,25,0
+Food & Groceries,5095,CREDIT,5,9,13,2
+Entertainment,3773,CREDIT,5,3,13,2
+Personal Care,1018,DEBIT,5,8,20,2
+Utilities,2764,DEBIT,5,3,23,5
+Gifts & Donations,5968,DEBIT,5,23,25,0
+Savings & Investing,7337,DEBIT,5,19,21,3
+Savings & Investing,959,DEBIT,5,17,11,0
+Debt Payments,2852,DEBIT,6,7,1,0
+Transportation,2399,DEBIT,6,0,3,2
+Transportation,7034,CREDIT,5,21,24,6
+Personal Care,7907,DEBIT,5,2,19,1
+Housing,5830,CREDIT,5,2,22,4
+Health & Medical,6557,CREDIT,5,17,23,5
+Entertainment,1467,CREDIT,5,3,25,0
+Housing,2962,DEBIT,5,9,15,4
+Housing,1002,DEBIT,5,19,17,6
+Shopping,7968,CREDIT,5,4,25,0
+Personal Care,4928,DEBIT,5,13,22,4
+Transportation,6644,CREDIT,6,6,7,6
+Transportation,7388,DEBIT,5,17,21,3
+Food & Groceries,4686,DEBIT,5,7,21,3
+Personal Care,5493,DEBIT,5,20,26,1
+Entertainment,7274,CREDIT,5,7,27,2
+Dining Out,1266,DEBIT,5,23,31,6
+Shopping,1645,CREDIT,5,3,21,3

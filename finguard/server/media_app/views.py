@@ -23,17 +23,15 @@ class MediaUploadView(APIView):
     "image/svg+xml",
     "image/svg", 
     ]
-
+ 
     def get(self, request:Request):
         """
         # This is just for testing purpose
         """
+        auth_user = request.user
+       
 
-        media = Media.objects.all()
-
-        serializer = MediaSerializer(instance = media, many=True)
-
-        return Response(serializer.data)
+        return Response(generate_res({"public_url": auth_user.profile.media}))
 
     def post(self, request:Request):
         """

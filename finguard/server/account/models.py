@@ -34,8 +34,6 @@ class Profile(models.Model):
     summary_statistics = models.JSONField(null=True, default=None)
     number_of_transactions = models.IntegerField(default = 0)
 
-    # this field prevent accessing the model(anomaly detection moodel) during retraining
-    is_ml_model_busy = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["-created_at"]

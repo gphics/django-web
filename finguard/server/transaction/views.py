@@ -1,20 +1,40 @@
 
+from account.tasks import update_profile_task
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from utils.res import generate_res
-from .serializers import  (CategorySerializer,TransactionReadSerializer,TransactionCreationSerializer, CircleListSerializer, CircleSerializer, ShallowTransactionReadSerializer)
+from .serializers import  (CategorySerializer,TransactionReadSerializer,TransactionCreationSerializer, CircleListSerializer, CircleSerializer, ShallowTransactionReadSerializer, CircleInviteReadSerializer, CircleInviteCreationSerializer)
 from rest_framework import status
-from .models import Transaction, Category, Circle
+from .models import Transaction, Category, Circle, CircleInvite
 from rapidfuzz import process as text_processor
 from utils import DataInterpretationEngine, DataTransformationEngine, TransactionFileProcesor
 from .pagination import TransactionPagination
 from .filters import TransactionFilter
 from utils.generate_clean_list import get_clean_list
-from rest_framework.parsers import MultiPartParser, JSONParser, FileUploadParser, FormParser
+from rest_framework.parsers import MultiPartParser, JSONParser,  FormParser
 from rest_framework import serializers as MainSerializer
 from django.db import transaction
 from django.contrib.auth.models import User
+from django.db.models import Min, Max
+from datetime import date
+import pandas as pd
+from ml import AnomalyDetectionEngine
+
+
+# dd = ["a", "b"]
+# if "a" not in dd:
+#     print(1)
+# else:
+#     print(0)
+# first = ShallowTransactionReadSerializer(many = True, instance = Transaction.objects.all())
+# # second = DataTransformationEngine(first.data)
+# df = pd.DataFrame(first.data)
+# cols = ["amount", "category", "transaction_type", "transaction_date", "description"]
+
+# new_df = df[cols].copy()
+# # print(new_df.head())
+# new_df.to_csv("bulk_transaction.csv", index=False)
 
 # CATEGORY...
 class CategoryCRUDView(APIView):
@@ -24,9 +44,20 @@ class CategoryCRUDView(APIView):
 
     def get(self, request):
         """
-        # This route retrieves all categories.
+        # This route retrieves all categories if title query param is not provided
+
+        ## Request Query Param:
+            > title?:string
+
+        ## Return: List of categories or empty list
         """
-        serializer = CategorySerializer(instance = Category.objects.all(), many = True)
+
+        title = request.query_params.get("title", None)
+   
+        if title:
+            serializer = CategorySerializer(instance = Category.objects.filter(title__icontains = title)[:5], many = True)
+        else:
+            serializer = CategorySerializer(instance = Category.objects.all()[:5], many = True)
         return Response(generate_res({"msg": serializer.data}))
        
        
@@ -61,6 +92,7 @@ class CategoryCRUDView(APIView):
             Category.objects.create(title=title)
             return Response(generate_res({"msg":"category created"}))
         except Exception as e:
+
             return Response(generate_res(err={"msg":str(e)}), status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -85,14 +117,18 @@ class TransactionCRUDView(APIView):
                 + category: title(str)
                 + min_amount:int
                 + max_amount:int
-                + month: int
-                + year: int
-
+                + min_year: int
+                + max_year: int
+                + min_month: int
+                + max_month: int
+            
+            ### Note: only one of the two query params can be present
         ## Return:
             + If id, transaction with the id is returned 
             + Else if any filtering parameter is provided, it returns the filtered data else all user transactions.
         """
         transaction_id = request.query_params.get("id", None)
+        
         try:
             if transaction_id:
                
@@ -100,7 +136,15 @@ class TransactionCRUDView(APIView):
                 trans = Transaction.objects.filter(pk = transaction_id)
                 if not trans.exists():
                     raise Exception("Transaction does not exist")
-                serializer = ShallowTransactionReadSerializer(instance = trans[0])
+                
+                trans = trans[0]
+
+                # If unauthorized access detected
+                if trans.user != request.user:
+                    return Response(generate_res(err={"msg":"Unauthorized accesss"}), status=status.HTTP_401_UNAUTHORIZED)
+                
+                # serializing the transaction data
+                serializer = ShallowTransactionReadSerializer(instance = trans)
                 
                 return Response(generate_res({"msg":serializer.data}))
             else:
@@ -112,7 +156,18 @@ class TransactionCRUDView(APIView):
                 if queryset.count() < 1:
                     return Response(generate_res({"msg": "You have no transaction"}))
 
-                filterset = TransactionFilter(request.query_params, queryset=queryset )
+                # getting the url query params
+                url_queries = {**request.query_params}
+
+                # removing page if present
+                url_queries.pop("page")
+
+                for key, value in url_queries.items():
+                    url_queries[key] = int(value[0]) if value[0].isdigit() else value[0]
+
+                print(url_queries)
+                # initializing the filterset
+                filterset = TransactionFilter(url_queries, queryset=queryset )
 
                 # checking if the filterset is valid
                 if not filterset.is_valid():
@@ -129,7 +184,7 @@ class TransactionCRUDView(APIView):
                 paginator = TransactionPagination()
 
                 # setting the total volume of transactions per page
-                paginator.page_size=10
+                paginator.page_size=15
 
                 # paginating the data
                 results_page = paginator.paginate_queryset(transactions, request)
@@ -150,19 +205,19 @@ class TransactionCRUDView(APIView):
 
         ## Request data:
             -  amount: int
-            -  category: category id(int)
+            -  category: category id(int) | title(str)
             -  transaction_date?: datetime(str)
             -  transaction_file?: a csv file. for multiple transactions upload.
        
         ## Return:
             - success message if no error.
-        """
 
+
+        """
 
         # getting transaction file
         transaction_file = request.data.get("transaction_file", None)
-
-        # IF FILE
+        # IF FILE 
         if transaction_file:
             try:
                
@@ -195,8 +250,10 @@ class TransactionCRUDView(APIView):
                 
             # this is responsible for catching the exceptions that originate from the TransactionFileProcessor
             except Exception as e:
+                print(e)
                 return Response(generate_res(err={"msg":str(e)}), status=status.HTTP_400_BAD_REQUEST)
             
+
 
         # IF JSON DATA
         try:
@@ -224,7 +281,9 @@ class TransactionCRUDView(APIView):
         """
         try:
             transaction_id = request.query_params.get("id", None)
-            trans = Transaction.objects.filter(pk = transaction_id)
+
+            # getting the transaction instance
+            trans = Transaction.objects.filter(pk = int(transaction_id))
             if not trans.exists():
                 return Response(generate_res(err={"msg": "transaction does not exist"}), status=status.HTTP_404_NOT_FOUND)
             serializer = TransactionCreationSerializer(instance = trans[0], data = request.data,context={"request":request}, partial = True)
@@ -232,6 +291,12 @@ class TransactionCRUDView(APIView):
                 serializer.save()
                 return Response(generate_res({"msg":"transaction updated"}))
             
+          
+
+            # updating the user profile in the background
+            update_profile_task.delay_on_commit(trans[0].user.pk)
+
+            # returning status message ...
             return Response(generate_res(err={"msg": serializer.errors}), status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response(generate_res(err={"msg": str(e)}), status=status.HTTP_400_BAD_REQUEST)
@@ -246,14 +311,48 @@ class TransactionCRUDView(APIView):
 
         ## Return:
             + success message if no error.
+
+
         """
         transaction_id = request.query_params.get("id", None)
         trans = Transaction.objects.filter(pk = transaction_id)
         if not trans.exists():
              return Response(generate_res(err={"msg": "transaction does not exist"}), status=status.HTTP_404_NOT_FOUND)
+        
         trans.delete()
         return Response(generate_res({"msg":"transaction deleted"}))
     
+
+@api_view(["GET"])
+def detect_anomaly(request):
+    user_transactions = request.user.transactions.all()
+    serializer = ShallowTransactionReadSerializer(user_transactions ,many = True)
+
+    transformer = DataTransformationEngine(serializer.data)
+
+    model = AnomalyDetectionEngine(transformer.get_df_copy_to_list())
+
+    model.train_model()
+
+    predictions = model.predict()
+
+    anomalous_transaction_count = 0
+
+    with transaction.atomic():
+        for pred in predictions:
+            flagged = pred["flagged"]
+            pred_id = pred["id"]
+            trans = Transaction.objects.get(id = pred_id)
+            trans.flagged = flagged
+            trans.save()
+
+            if flagged:
+                anomalous_transaction_count +=1
+    resultStr = "No anomalous transaction detected." if anomalous_transaction_count == 0 else f"{anomalous_transaction_count} anomalous transaction(s) detected."
+    return Response(generate_res({"msg":{
+        "is_anomalous": bool(anomalous_transaction_count),
+        "resultStr":resultStr
+    }}))
 # 
 # 
 # HELPER FUNCTIONS THAT I DELIBERATELY PLACED HERE BECAUSE THEY USE CERTAIN INFORMATION IN THIS MODULE
@@ -344,14 +443,16 @@ def interpret_summary_statistics(request):
 
     ## It also support filtering that is applied to the user and locations of transactions.
 
-        - filtering params:
+       * filtering params?:
                     + flagged: bool (True| False)
                     + transaction_type: (DEBIT | CREDIT)
                     + category: title(str)
                     + min_amount:int
                     + max_amount:int
-                    + month: int
-                    + year: int
+                    + min_year: int
+                    + max_year: int
+                    + min_month: int
+                    + max_month: int
 
     ## Return:
         * Interpreted information gotten from the data
@@ -376,6 +477,7 @@ def interpret_summary_statistics(request):
         return Response(generate_res(err={"msg":filterset.errors}), status=status.HTTP_400_BAD_REQUEST)
     
     user_transactions = filterset.qs
+
 
       # checking the number of user transactions
     user_transaction_count = user_transactions.count()
@@ -468,7 +570,7 @@ class CircleCRUDView(APIView):
 
     def get(self, request):
         """
-        # This method returns a list of all circles a user is in if id(circle id) request param isnt provided else it returns a circle information
+        # This method returns a list of all circles a user is in, if id(circle id) request param isn't provided else it returns a circle information
 
         ## Request param:
             - id?: int(circle id)
@@ -630,8 +732,149 @@ class CircleCRUDView(APIView):
             circle.delete()
             return Response(generate_res({"msg":"circle deleted successfully"}))
         
+ 
+class CircleInvitationCRUDView(APIView):
+
+    def get(self, request):
+
+        """
+        ## This route is responsible for reading all user invitations.
+
+        ### Returns: list()
+        """
+        invitations = request.user.invitations.all()
+        serializer = CircleInviteReadSerializer(many = True, instance = invitations)
+        return Response(generate_res({"msg": serializer.data}))
+
+    def post(self, request):
+        """
+        ## This route is responsible for creating circle invite
+
+        ### Request data:
+            > circle(id):int
+            > user(recipient id):int
+
+        ## NOTE: Only circle admin(ADMIN | OWNER) are authorized to do this
+        """
+        
+        auth_user = request.user
+
+        # request data
+        circle_id = request.data.get("circle", None)
+        recipient_user_id = request.data.get("user", None)
+
+        if not circle_id or not recipient_user_id:
+            return Response(generate_res(err={"msg": "Required data must be provided"}), status=status.HTTP_400_BAD_REQUEST)
+        
+        circle = Circle.objects.filter(id=circle_id)
+        if not circle.exists():
+            return Response(generate_res(err={"msg": "Circle does not exists"}), status=status.HTTP_404_NOT_FOUND)
+        circle = circle[0]
+
+        # verifying authorization (ADMIN | MEMBER) for auth user
+        is_auth_user_permitted = circle.is_admin(auth_user)
+        if not is_auth_user_permitted:
+            return Response(generate_res(err={"msg": "Unauthorized action"}), status=status.HTTP_401_UNAUTHORIZED)
+        
+        
+        # fetching the recipient user data
+        recipient_user = User.objects.filter(id = recipient_user_id)
+        if not recipient_user.exists():
+            return Response(generate_res(err={"msg": "Recipient user does not exists"}), status=status.HTTP_404_NOT_FOUND)
+        recipient_user = recipient_user[0]
+
+        # checking if recipient user is already a member
+        is_recipient_already_a_member = circle.is_member(recipient_user)
+
+        if is_recipient_already_a_member:
+            return Response(generate_res(err={"msg": "Recipient user is already a member"}), status=status.HTTP_400_BAD_REQUEST)
+        
+        # creating invite
+        serializer = CircleInviteCreationSerializer(data = request.data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(generate_res({"msg":"Invitation sent"}))
+        return Response(generate_res(err={"msg": serializer.errors}), status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request):
+        """
+        ## This route is responsible for accepting or declining circle invitations
+
+        ## Request data:
+            > id (invitation id):int
+            > status (ACCEPTED | DECLINED)
+
+        """
+        # request data
+
+        invitation_id:int = request.data.get("id", None)
+        invitation__status:str = request.data.get("status", None)
+
+        acceptable_status_list = ["ACCEPTED", "DECLINED"]
+
+        # validating the request data
+        if not invitation_id:
+            return Response(generate_res(err={"msg": "invitation id must be provided"}), status=status.HTTP_400_BAD_REQUEST)
+        
+        if invitation__status not in acceptable_status_list:
+            return Response(generate_res(err={"msg": "invalid invitation status provided"}), status=status.HTTP_400_BAD_REQUEST)
+        
+        # fetching invitation
+        invitations = CircleInvite.objects.filter(id = invitation_id)
+        if not invitations.exists():
+            return Response(generate_res(err={"msg": "invitation does not exist"}), status=status.HTTP_404_NOT_FOUND)
+        
+        # subsetting the invitation
+        invitation = invitations[0]
+    
+        # condition for accepting invitation
+        response_text ="invitation declined"
+        if invitation__status == acceptable_status_list[0]:
+            recipient_user = invitation.user
+            circle = invitation.circle
+
+            # adding member
+            circle.update_member(user = recipient_user)
+            circle.save()
+            response_text ="invitation accepted"
+        
+        # deleting invitation because it is no longer needed
+        invitation.delete()
+
+        return Response(generate_res(err={"msg": response_text}))
+        
+
+    # 
+    # 
+    # LEGACY ...
+    # 
+    # 
+
+    def delete(self, request):
+        """
+        ## This route is responsible for deleting invitations after it's "is_accepted" status changes
+
+        ### Request query:
+            > id(invitation id):int
+        """
+        invitation_id = request.query_params("id", None)
+        if not invitation_id:
+            return Response(generate_res(err={"msg": "invitation id must be provided"}), status=status.HTTP_400_BAD_REQUEST)
+        
+        invitations = CircleInvite.objects.filter(id = invitation_id)
+        if not invitations.exists():
+            return Response(generate_res(err={"msg": "invitation does not exist"}), status=status.HTTP_404_NOT_FOUND)
+        
+        invitations.delete()
+        return Response(generate_res({"msg": "invitation deleted successfully"}))
 
 
+#
+#
+# LEGACY ...
+#
+#
 @api_view(["PUT"])
 def add_circle_member(request, id:int):
     """
@@ -840,3 +1083,38 @@ def rank_circle_members(request, id:int):
     except Exception as e:
         return Response(generate_res(err={"msg": str(e)}), status=status.HTTP_400_BAD_REQUEST)
     
+
+@api_view(["GET"])
+def get_filtering_limit(request):
+    """
+    # This route is responsible for getting the filtering limits for each user.
+    
+    ## Result
+        * filtering params?:
+                    + flagged: bool (True| False)
+                    + transaction_type: (DEBIT | CREDIT)
+                    + category: title(str)
+                    + min_amount:int
+                    + max_amount:int
+                    + min_year: int
+                    + max_year: int
+                    + min_month: int
+                    + max_month: int
+    """
+
+    user_transactions = Transaction.objects.filter(user = request.user)
+    today = date.today()
+    # dates
+    combinations = user_transactions.aggregate(min_year = Min("transaction_date__year") or today.year , max_year=Max("transaction_date__year") or today.year, min_amount=Min("amount") or 0, max_amount=Max("amount") or 1000)
+
+    # months = user_transactions.values_list("transaction_date__month", flat=True).order_by().distinct()
+
+    categories = user_transactions.values_list("category__title", flat=True).order_by("category__title").distinct()
+
+    result = {
+        "flagged": [True, False],
+        "transaction_type": ["DEBIT", "CREDIT"],
+        "categories":categories,
+        **combinations,
+    }
+    return Response(generate_res({"msg": result}))

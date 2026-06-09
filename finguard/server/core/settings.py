@@ -41,11 +41,13 @@ CUSTOM_APPS = [
     "media_app"
 ]
 THIRD_PARTY_APPS = [
+    "corsheaders",
     "rest_framework",
     "rest_framework.authtoken",
     "django_filters",
     "drf_spectacular",
-    "storages"
+    "storages",
+    'django_extensions'
 ]
 DJANGO_APPS = [
     'django.contrib.admin',
@@ -60,6 +62,7 @@ INSTALLED_APPS =  DJANGO_APPS + THIRD_PARTY_APPS + CUSTOM_APPS
 
 
 MIDDLEWARE = [
+      "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -68,6 +71,16 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ALLOWED_ORIGINS = [
+   os.environ.get("CLIENT_URL")
+]
+
+CORS_ALLOW_CREDENTIALS = True
+CSRF_TRUSTED_ORIGINS = [
+   os.environ.get("CLIENT_URL")
+]
+
 
 ROOT_URLCONF = 'core.urls'
 
@@ -93,9 +106,17 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # },
+    "default":{
+        "ENGINE":"django.db.backends.postgresql",
+        "NAME":"finguard",
+        "USER":"postgres",
+        "PASSWORD":782800,
+        "HOST":"localhost",
+        "PORT":"5432"
     }
 }
 
@@ -150,22 +171,6 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-
-CELERY_BEAT_SCHEDULE = {
-    "ml-cleanup":{
-        "task":"ml.tasks.retrain_available_models",
-
-        # running the cleanup every 12:00 with 3 days interval
-        "schedule": crontab(minute=0, hour=0, day_of_month="*/3"),
-
-        # for test purpose
-        # "schedule": crontab(minute="*/2")
-    }
-}
-
-CELERY_BROKER_TRANSPORT_OPTIONS = {
-    "visibility_timeout":3600  * 5 # 5 hours
-}
 
 
 # AWS S3 SETTINGS

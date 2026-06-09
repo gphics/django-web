@@ -49,7 +49,7 @@ def update_profile():
                 "currency":str(np.random.choice(currencies))
             }}
            
-            url = "http://127.0.0.1:8000/profile"
+            url = "http://127.0.0.1:8000/account/profile"
             send_request(url, payload, headers, "put")
 
 

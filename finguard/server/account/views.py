@@ -44,7 +44,7 @@ def create_user(request):
             Profile.objects.create(user = user)
 
             token = Token.objects.get_or_create(user = user)
-            
+        
            
         return Response(generate_res({"msg":{
             "token":str(token[0])
@@ -76,7 +76,7 @@ def auth_user(request):
     if user:
         token = str(Token.objects.get_or_create(user = user)[0])
 
-        return Response(generate_res({"token":token}))
+        return Response(generate_res({"msg":{"token":token}}))
     return Response(generate_res(err={"msg":"invalid credentials"}), status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -150,16 +150,25 @@ class ProvileView(APIView):
             return Response(generate_res(err={user_ser.errors or None, profile_ser.errors or None}), status=status.HTTP_400_BAD_REQUEST)
     
 @api_view(["GET"])
-def get_all_currencies(request):
+def get_currencies(request):
     """
     # This view returns all currencies codes and symbols
 
-    """
+    ## Query params:
+        - user?:str
 
+    """
+    # if a user currency is needed
+    is_user_currency:str | None = request.query_params.get("user", None)
+    if is_user_currency:
+        return Response(generate_res({"msg": {"currency": request.user.profile.currency}}))
+    
+    # else
     all_currencies = get_global("all_currencies")
 
     return Response(generate_res({"msg": all_currencies}))
     
+
 
 @api_view(["PUT"])
 def update_password(request):

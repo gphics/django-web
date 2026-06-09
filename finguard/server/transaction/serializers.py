@@ -1,11 +1,15 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import Category, Transaction, Circle, CircleMembership
+from .models import Category, Transaction, Circle, CircleMembership, CircleInvite
 from rapidfuzz import process as text_processor
 from babel.numbers import get_currency_symbol
 from account.models import Profile
 from media_app.serializers import MediaSerializer
 from account.serializers import UserSerializer
+import datetime
+from dateutil import parser
+from django.utils.dateparse import parse_datetime
+
 User = get_user_model()
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -66,6 +70,18 @@ class TransactionCreationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Please update the country on your profile before making a transaction")
         return attrs
     
+    def validate_transaction_date(self, value):
+        try:
+
+            # getting the initial date
+            raw_date = self.initial_data.get("transaction_date")
+
+            return parser.parse(str(value))
+        
+        except:
+            raise serializers.ValidationError("Invalid transaction date format")
+
+
     def create(self, validated_data):
 
         """ 
@@ -274,3 +290,25 @@ class CircleListSerializer(serializers.ModelSerializer):
 
      
         return sorted_members_data
+    
+
+
+class CircleInviteReadSerializer(serializers.ModelSerializer):
+    """
+    This serializer handles the reading of the circle invite model instance. It returns the user and cirle username and name respectively
+    """
+
+    user = serializers.CharField(source="user.username", read_only=True)
+    circle = serializers.CharField(source="circle.name", read_only=True)
+    class Meta:
+        model=CircleInvite
+        fields = "__all__"
+
+class CircleInviteCreationSerializer(serializers.ModelSerializer):
+    """
+    This serializer is responsible for the creation of circle invite model instance
+    """
+
+    class Meta:
+        model=CircleInvite
+        fields = "__all__"

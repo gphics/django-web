@@ -5,8 +5,16 @@
     # > delete migrations dir
     # mkdir migrations and touch 
 
-echo "DELETING THE DB"
-rm db.sqlite3
+# echo "DELETING THE DB"
+# rm db.sqlite3
+
+# echo "RESETING THE DB"
+
+# (
+#     source ../../env/bin/activate
+#     python manage.py reset_db --noinput
+# )
+
 
 echo "DELETING THE __PYCACHE__ DIR"
 find -iname "__pycache__" | xargs rm -rf

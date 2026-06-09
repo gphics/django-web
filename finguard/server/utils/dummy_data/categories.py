@@ -28,3 +28,4 @@ def category_creation():
     for category in transaction_categories:
         payload = {"title":category}
         send_request(url, payload, headers)
+

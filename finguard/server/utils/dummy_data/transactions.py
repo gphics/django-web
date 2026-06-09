@@ -3,21 +3,22 @@ import pandas as pd
 import numpy as np
 from sender import send_request
 from pathlib import Path
-
+import datetime
+from dateutil import parser
 
 
 base_dir =str(Path(__file__).resolve().parent)
 fake  = Faker()
 
-total_number = 40
+total_number = 60
 
 def generate_random_transactions(file_path: str |None =None) -> list | None:
     """
     This function generate random transactions and export it as a list unless file_path is provided which would make this function generate a csv file for the transactions.
 
     """
-    max_list = np.random.randint(3000, 10000, size=50)
-    min_list = np.random.randint(500, 2000, size=50)
+    max_list = np.random.randint(3000, 30000, size=50)
+    min_list = np.random.randint(100, 2000, size=50)
     # generating fake past random transaction datetimes
     transaction_date = [fake.past_datetime() for i in range(total_number)]
 
@@ -58,6 +59,7 @@ def transaction_creation():
     with open(f"{base_dir}/tokens.txt", "r+") as file:
         tokens = file.read().splitlines()
     
+
     # tokens = [tokens[0]]
     for token in tokens:
         transactions = generate_random_transactions()
@@ -66,11 +68,14 @@ def transaction_creation():
         # for transaction in transactions[:2]:
             send_request(url, payload=transaction, headers = headers)
 
+# x = (fake.past_datetime(tzinfo=datetime.timezone.utc))
 
-
+# print(parser.parse(str(x)))
+# transaction_creation()
 # file_path = f"{base_dir}/dummy_transactions.csv"
 
 # generate_random_transactions(file_path)
 # for i in range(10):
 #     transaction_creation()
 # transaction_creation()
+

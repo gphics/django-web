@@ -30,7 +30,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class ProfileSerializer(serializers.ModelSerializer):
     """
-    This serializer is for the creation and listing of profiles
+    This serializer is for the creation , update, and listing of profiles
     """
     user = UserSerializer(read_only = True)
 

@@ -16,7 +16,7 @@ class TransformationUtils:
         self.df = pd.DataFrame(self.raw_data)
         
         # transforming date
-        self.df["transaction_date"] = pd.to_datetime(self.df["transaction_date"])
+        self.df["transaction_date"] = pd.to_datetime(self.df["transaction_date"], format="mixed")
 
         self.extract_date_info()
 

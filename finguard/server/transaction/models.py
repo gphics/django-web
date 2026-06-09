@@ -4,7 +4,7 @@ from django.utils import timezone
 
 
 class Category(models.Model):
-    title = models.CharField(max_length=15, unique=True)
+    title = models.CharField(max_length=150, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -30,8 +30,8 @@ class Transaction(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="transactions")
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     transaction_date = models.DateTimeField(default=timezone.now)
-    description = models.TextField(null = True)
-    flagged = models.BooleanField(default=False)
+    description = models.TextField(null = True, blank=True)
+    flagged = models.BooleanField(default=False, blank=True)
     
     # date time info
     created_at = models.DateTimeField(auto_now_add=True)
@@ -43,9 +43,9 @@ class Transaction(models.Model):
 
     # adding transaction location information
     # country, state, city -> For subsetting all transactions within those locations
-    country = models.CharField(max_length=30, null=True)
-    state = models.CharField(max_length=30, null=True)
-    city = models.CharField(max_length=30, null=True)
+    country = models.CharField(max_length=30, null=True , blank=True)
+    state = models.CharField(max_length=30, null=True , blank=True)
+    city = models.CharField(max_length=30, null=True , blank=True)
 
     class Meta:
         ordering = ["-created_at"]
@@ -133,3 +133,22 @@ class Circle(models.Model):
             role = role
         ).exists()
 
+
+class CircleInvite(models.Model):
+
+
+
+    circle = models.ForeignKey(Circle, on_delete=models.CASCADE, related_name="invitations")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="invitations")
+    is_accepted = models.BooleanField(default=False, blank=True)
+
+    # date time info
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"Invitation from {self.circle.name} to {user.username}"

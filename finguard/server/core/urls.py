@@ -21,7 +21,7 @@ from django.conf import settings
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("", include("account.urls", namespace="account")),
+    path("account/", include("account.urls", namespace="account")),
     path("transaction/", include("transaction.urls", namespace="transaction")),
     path("ml/", include("ml.urls", namespace="ml")),
     path("media/", include("media_app.urls", namespace="media")),

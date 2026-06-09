@@ -103,7 +103,7 @@ class Helper:
         This method transform the data type of transaction date col to datetime and raise error if not possible.
         """
         try:
-            self.df["transaction_date"] = pd.to_datetime(self.df["transaction_date"])
+            self.df["transaction_date"] = pd.to_datetime(self.df["transaction_date"], format="mixed")
         except Exception as e:
             raise e
 
@@ -125,7 +125,7 @@ class Helper:
         
         null_cols = null_list[null_list > 0].index.to_list()
 
-        if len(null_cols):
+        if len(null_cols) and "description" not in null_cols:
             cols_str = ", ".join(null_cols)
             raise Exception(f"{cols_str} contains empty values. ")
         
