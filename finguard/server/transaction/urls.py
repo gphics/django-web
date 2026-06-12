@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import (CategoryCRUDView, TransactionCRUDView, CircleCRUDView, add_circle_member,remove_circle_member, interpret_summary_statistics, leave_circle, rank_circle_members, get_filtering_limit, detect_anomaly, CircleInvitationCRUDView
+from .views import (CategoryCRUDView, TransactionCRUDView, CircleCRUDView, add_circle_member,remove_circle_member, interpret_summary_statistics, leave_circle, rank_circle_members, get_filtering_limit, detect_anomaly, CircleInvitationCRUDView, get_member_circle_role
     )
 
 
@@ -14,11 +14,12 @@ urlpatterns = [
     path("remove-circle-member/<int:id>", remove_circle_member, name="remove-circle-member"),
     path("leave-circle/<int:id>",leave_circle, name="leave-circle"),
     path("rank-circle-members/<int:id>",rank_circle_members, name="rank-circle-members"),
+    path("circle-member-role",  get_member_circle_role, name="circle-member-role"),
      
     # 
     # Class based views
     path("category", CategoryCRUDView.as_view(), name="category"),
     path("", TransactionCRUDView.as_view(), name="transaction"),
     path("circle", CircleCRUDView.as_view(), name="circle"),
-    path("invite", CircleInvitationCRUDView.as_view(), name="invite"),
+    path("circle-invite", CircleInvitationCRUDView.as_view(), name="circle-invite"),
 ]

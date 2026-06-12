@@ -126,6 +126,21 @@ class Circle(models.Model):
             role__in = ["ADMIN", "OWNER", "MEMBER"]
         ).exists()
     
+    def get_member_role(self, user):
+        """
+        ## This method is responsible for returning member role if the user is a circle member, else return "False"
+
+        ### Return: ADMIN | MEMBER | OWNER | FALSE
+        """
+
+        is_member = self.is_member(user)
+        if not is_member:
+            return False
+        
+        role = CircleMembership.objects.get(circle = self, user = user).role
+        return role
+        
+    
     def verify_member_role(self, user, role="MEMBER"):
         return CircleMembership.objects.filter(
             circle = self,
@@ -136,11 +151,9 @@ class Circle(models.Model):
 
 class CircleInvite(models.Model):
 
-
-
     circle = models.ForeignKey(Circle, on_delete=models.CASCADE, related_name="invitations")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="invitations")
-    is_accepted = models.BooleanField(default=False, blank=True)
+   
 
     # date time info
     created_at = models.DateTimeField(auto_now_add=True)
@@ -151,4 +164,4 @@ class CircleInvite(models.Model):
         ordering = ["-created_at"]
 
     def __str__(self):
-        return f"Invitation from {self.circle.name} to {user.username}"
+        return f"Invitation from {self.circle.name} to {self.user.username}"

@@ -589,7 +589,7 @@ class CircleCRUDView(APIView):
             circle = Circle.objects.filter(pk = circle_id)
 
             # if the circle does not exists
-            if not circle.exists():
+            if not circle.exists(): 
                 return Response(generate_res(err={"msg":"circle does not exist"}), status=status.HTTP_404_NOT_FOUND)
             
             # subsetting the circle queryset
@@ -739,11 +739,17 @@ class CircleInvitationCRUDView(APIView):
 
         """
         ## This route is responsible for reading all user invitations.
-
+        ## Request query:
+            > circle (id)?:int
         ### Returns: list()
         """
-        invitations = request.user.invitations.all()
-        serializer = CircleInviteReadSerializer(many = True, instance = invitations)
+        circle_id = request.query_params.get("circle", None)
+        if circle_id:
+            invitations = CircleInvite.objects.filter(circle__id = circle_id)
+            serializer = CircleInviteReadSerializer(many = True, instance = invitations)
+        else:
+            invitations = request.user.invitations.all()
+            serializer = CircleInviteReadSerializer(many = True, instance = invitations)
         return Response(generate_res({"msg": serializer.data}))
 
     def post(self, request):
@@ -782,10 +788,14 @@ class CircleInvitationCRUDView(APIView):
         if not recipient_user.exists():
             return Response(generate_res(err={"msg": "Recipient user does not exists"}), status=status.HTTP_404_NOT_FOUND)
         recipient_user = recipient_user[0]
-
-        # checking if recipient user is already a member
+        
+        # checking if the invitation to the circle already exists
+        is_pending_invite = CircleInvite.objects.filter(user = recipient_user, circle=circle).exists()
+        
+        if is_pending_invite:
+            return Response(generate_res(err={"msg": "Invitation already sent"}), status=status.HTTP_400_BAD_REQUEST)
+        # checking if recipient user is already a circle member
         is_recipient_already_a_member = circle.is_member(recipient_user)
-
         if is_recipient_already_a_member:
             return Response(generate_res(err={"msg": "Recipient user is already a member"}), status=status.HTTP_400_BAD_REQUEST)
         
@@ -858,7 +868,7 @@ class CircleInvitationCRUDView(APIView):
         ### Request query:
             > id(invitation id):int
         """
-        invitation_id = request.query_params("id", None)
+        invitation_id = request.query_params.get("id", None)
         if not invitation_id:
             return Response(generate_res(err={"msg": "invitation id must be provided"}), status=status.HTTP_400_BAD_REQUEST)
         
@@ -870,6 +880,33 @@ class CircleInvitationCRUDView(APIView):
         return Response(generate_res({"msg": "invitation deleted successfully"}))
 
 
+@api_view(["GET"])
+def get_member_circle_role(request):
+    """
+    ## This route is for fetching auth user circle role
+
+    ### Request query:
+        > circle (id):int
+    """
+
+    circle_id = request.query_params.get("circle", None)
+    
+    if not circle_id:
+        return Response(generate_res(err={"msg":"Circle id must be provided"}), status=status.HTTP_400_BAD_REQUEST)
+    
+    circle = Circle.objects.filter(id = circle_id)
+    if not circle.exists():
+          return Response(generate_res(err={"msg":"Circle does not exist"}), status=status.HTTP_404_NOT_FOUND)
+    
+    circle= circle[0]
+    auth_user = request.user
+    role = circle.get_member_role(auth_user)
+
+    # if the auth user is not a circle member
+    if not role:
+        return Response(generate_res(err={"msg":"You are not a member of the circle"}), status=status.HTTP_401_UNAUTHORIZED)
+    
+    return Response(generate_res({"msg":role}))
 #
 #
 # LEGACY ...
@@ -940,8 +977,6 @@ def add_circle_member(request, id:int):
     except Exception as e:
         return Response(generate_res(err={"msg":str(e)}), status=status.HTTP_400_BAD_REQUEST)
     
-
-
 @api_view(["DELETE"])
 def remove_circle_member(request, id):
     """

@@ -26,9 +26,11 @@ function TransactionRenderer({ result, currencyRes, filteringLimitRes }) {
   }, [err])
   return (
     <div className='flex flex-col w-full'>
-      {!success ? <></> :
+      {!success ? <h2 className='text-center poppins-bold text-[1.5em] text-rose-500 capitalize my-auto'> {err?.[0]}  </h2> :
         <>
           <ToastContainer theme='dark' position='top-center' />
+
+          {/* Filtering component */}
           <TransactionFilteringComponent currencyRes={currencyRes} filteringLimitRes={filteringLimitRes} />
 
           {/* Transaction Creation */}

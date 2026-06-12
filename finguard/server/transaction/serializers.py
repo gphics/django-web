@@ -200,6 +200,8 @@ class CircleSerializer(serializers.ModelSerializer):
     """
     This serializer if for circle creation
     """
+
+    media = MediaSerializer(read_only = True, allow_null  = True)
     class Meta:
         model = Circle
         fields = "__all__"
@@ -210,7 +212,7 @@ class CircleMemberProfileSerializer(serializers.ModelSerializer):
     """
     A specially made profile serializer for circle. It exclude the user field on the profile
     """
-    media = MediaSerializer(read_only = True)
+    media = MediaSerializer(read_only = True, allow_null  = True)
     class Meta:
         model = Profile
         exclude = ["user"]
@@ -224,13 +226,13 @@ class CircleMemberSerializer(serializers.ModelSerializer):
         model = User
         exclude = ['password', 'is_superuser', 'last_login']
 
-        
+         
 class CircleListSerializer(serializers.ModelSerializer):
     """
     This serializer is for reading the circle object and it goes deep to bring out the details of the members of a circle
     """
     members = serializers.SerializerMethodField()
-    media = MediaSerializer(read_only = True)
+    media = MediaSerializer(read_only = True, allow_null=True)
     class Meta:
         model = Circle
         fields = "__all__"
@@ -300,10 +302,23 @@ class CircleInviteReadSerializer(serializers.ModelSerializer):
 
     user = serializers.CharField(source="user.username", read_only=True)
     circle = serializers.CharField(source="circle.name", read_only=True)
+    media = serializers.SerializerMethodField()
+    # media = MediaSerializer(read_only = True, allow_null=True)
     class Meta:
         model=CircleInvite
         fields = "__all__"
 
+
+    def get_media(self, obj):
+        """
+        This method get the user media
+        """
+
+        if hasattr(obj.user.profile, "media"):
+            return MediaSerializer(obj.user.profile.media).data
+        
+
+        return None
 class CircleInviteCreationSerializer(serializers.ModelSerializer):
     """
     This serializer is responsible for the creation of circle invite model instance

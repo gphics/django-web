@@ -93,7 +93,7 @@ class ProvileView(APIView):
         # This is the read view.
 
         ## Request query:
-            * search?: user id (int) | all (to get all users)
+            * search?: user username (str) | all (to get all users)
 
         ## Return:
             * user(s) profile
@@ -106,14 +106,13 @@ class ProvileView(APIView):
         elif search == "all":
             serializer = ProfileSerializer(instance = Profile.objects.all(), many = True)
         else:
-            try:
-                user = User.objects.get(pk = int(search))
-            except Exception as e:
-                return Response(generate_res(err={"msg": str(e)}), status=status.HTTP_404_NOT_FOUND)
+           
+            profiles = Profile.objects.filter(user__username__icontains = search)
+    
             
-            serializer = ProfileSerializer(instance = Profile.objects.get(user = user))
-        # return Response(generate_res({"msg":serializer.data}))
-        return Response(serializer.data)
+            serializer = ProfileSerializer(instance = profiles[:5], many=True)
+        return Response(generate_res({"msg":serializer.data}))
+        # return Response(serializer.data)
 
     def put(self, request):
         """

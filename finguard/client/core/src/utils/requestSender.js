@@ -41,6 +41,7 @@ export default async function sendRequest(url, options = {}) {
     const reqOptions = {
       method,
       headers: { "Content-Type": "application/json" },
+      cache: 'no-store' 
     };
 
     // adding the body if required
