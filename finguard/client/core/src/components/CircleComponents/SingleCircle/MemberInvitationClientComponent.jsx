@@ -80,11 +80,11 @@ function MemberInvitationClientComponent() {
 
     }
     return (
-        <div className="my-2">
+        <div className="my-2 flex flex-col">
             {!!isLoading && <FullPageLoadingComponent />}
             <ToastContainer theme="dark" position="top-center" />
-            <form onSubmit={submitHandler} className="my-2">
-                <h3 className="poppins-bold">Invite to collaborate</h3>
+            <form onSubmit={submitHandler} className="my-2 mx-auto">
+                <h3 className="poppins-bold uppercase text-center my-1">Invite to collaborate</h3>
 
 
                 <div className="mt-2 w-[350px] flex justify-between items-center">
@@ -99,8 +99,8 @@ function MemberInvitationClientComponent() {
             {!!users.length &&
                 <section className="flex flex-wrap justify-around items-center">
                     {users.map((elem, i) => {
-                        return <article key={i} className="flex justify-between w-full max-w-[300px] my-2 bg-overlay p-3 items-center rounded-sm">
-                            <MediaPresentationComponent name={elem?.username} media={elem?.media} />
+                        return <article key={i} className="flex justify-between w-full max-w-[300px] my-2 bg-overlay p-3 items-center hover:text-white hover:bg-primary-color">
+                            <MediaPresentationComponent name={elem?.username} media={elem?.user_media} />
 
                             <div className="flex flex-col flex-auto ml-3">
                                 <h4 className="capitalize poppins-bold"> {elem?.username}  </h4>

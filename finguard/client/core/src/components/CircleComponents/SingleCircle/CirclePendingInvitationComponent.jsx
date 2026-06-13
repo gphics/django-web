@@ -7,9 +7,10 @@ import { toast, ToastContainer } from 'react-toastify'
 
 function CirclePendingInvitationComponent({ pendingCircleInvites, circleId }) {
 
+  const displayLimit = 4
   const [isLoading, setIsLoading] = useState(false)
   const [pendingInvites, setPendingInvites] = useState(pendingCircleInvites?.data?.msg || [])
-  const [inviteData, setInviteData] = useState(pendingInvites.slice(0, 3) || [])
+  const [inviteData, setInviteData] = useState(pendingInvites.slice(0, displayLimit) || [])
   const errorMsg = pendingInvites.length ? null : pendingCircleInvites?.err?.[0]
 
   useEffect(() => {
@@ -69,11 +70,11 @@ function CirclePendingInvitationComponent({ pendingCircleInvites, circleId }) {
 
       {!errorMsg && <>
 
-        <h2 className='poppins-bold'>Pending Invites ({pendingInvites.length})</h2>
+        <h2 className='poppins-bold my-1 text-center text-[1.2em] uppercase'>Pending Invites ({pendingInvites.length})</h2>
 
-        <section className='my-1'>
+        <section className='my-1 flex flex-wrap justify-around'>
           {inviteData.map((elem, i) => {
-            return <article key={i} className='flex flex-col justify-center my-2 px-2 shadow-md w-[300px] h-[100px] bg-overlay tranition-all duration-300'>
+            return <article key={i} className='flex flex-col justify-center my-2 px-2 shadow-md w-[300px] h-[120px] bg-overlay tranition-all duration-300 mx-1'>
               <div className='mb-2 flex justify-between items-center'>
                 <MediaPresentationComponent media={elem?.media} name={elem?.user} />
                 <h4 className='capitalize text-start  flex-auto ml-2'>{elem?.user}</h4>
@@ -86,10 +87,12 @@ function CirclePendingInvitationComponent({ pendingCircleInvites, circleId }) {
         {/* Pending invite display button */}
 
         {/* Less btn */}
-        {inviteData?.length > 3 && <button onClick={() => setInviteData(pendingInvites.slice(0, 3))} type="button" className='px-3 py-1 bg-accent-color mx-auto cursor-pointer poppins-bold'>See Less</button>}
+        {pendingInvites.length > displayLimit && <>
+          {inviteData?.length > displayLimit && <button onClick={() => setInviteData(pendingInvites.slice(0, displayLimit))} type="button" className='px-3 py-1 bg-accent-color mx-auto cursor-pointer poppins-bold'>See Less</button>}
 
         {/* More btn */}
-        {inviteData?.length < pendingInvites?.length && <button type="button" onClick={() => setInviteData(pendingInvites)} className='px-3 py-1 bg-accent-color mx-auto cursor-pointer poppins-bold'>See More</button>}
+          {inviteData?.length < pendingInvites?.length && <button type="button" onClick={() => setInviteData(pendingInvites)} className='px-3 py-1 bg-accent-color mx-auto cursor-pointer poppins-bold'>See More</button>}
+        </>}
 
       </>}
     </div>

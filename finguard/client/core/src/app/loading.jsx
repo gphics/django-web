@@ -1,9 +1,10 @@
-import React from 'react'
+import FullPageLoadingComponent from '@/components/Others/FullPageLoadingComponent'
+
 
 function loading() {
   return (
       <div>
-          
+          <FullPageLoadingComponent/>
     </div>
   )
 }

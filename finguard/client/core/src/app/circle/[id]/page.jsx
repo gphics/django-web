@@ -7,12 +7,20 @@ import sendRequest from "@/utils/requestSender"
 import { cookies } from "next/headers"
 
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata({ params, searchParams }) {
   const { id } = await params
+  const currentView = (await searchParams)?.view || "Home"
   return {
-    title: "Circle | " + id
+    title: "Circle | " + id + " | " + currentView
   }
 }
+
+async function getUserId(authToken) {
+  const url = "account/get-auth-user-id"
+  const res = await sendRequest(url, { providedAuthToken: authToken })
+  return res
+}
+
 
 async function fetchMemberRole(circleId, authToken) {
   const url = "transaction/circle-member-role?circle=" + circleId
@@ -31,6 +39,10 @@ async function page({ params, searchParams }) {
   const authToken = cookieMgt.getCookie()
 
   const memberRoleRes = await fetchMemberRole(id, authToken)
+  const userIdRes = await getUserId(authToken)
+
+  // destructuring ...
+  const authUserId = userIdRes?.data?.msg || null
   const memberRole = memberRoleRes?.data?.msg || null
 
   const adminArr = ["ADMIN", "OWNER"]
@@ -38,17 +50,17 @@ async function page({ params, searchParams }) {
   
   return (
     <div className='flex-auto flex flex-col px-1'>
-      {!memberRoleRes?.success || memberRoleRes?.err ? <h2 className="self-center mx-auto text-[1.3me] text-rose-500 poppins-bold"> memberRoleRes?.err[0] </h2> : <> 
+      {!memberRoleRes?.success || memberRoleRes?.err ? <h2 className="self-center mx-auto text-[1.5em] text-rose-500 poppins-bold"> {memberRoleRes?.err[0]} </h2> : <> 
         
         {/* Navigation */}
       <SingleCircleRenderer isAdmin={isAdmin} circleId={id} currentView={currentView} />
 
       {/* Rendering view conditionally */}
-      {currentView === "Home" && <SingleCircleHomeComponent authToken={authToken} circleId={id} />}
-        {currentView === "Info" && <SingleCircleInfoComponent authToken={authToken} circleId={id} />}
-        
+      {currentView === "Home" && <SingleCircleHomeComponent  authUserId={authUserId} authToken={authToken} circleId={id} />}
+        {currentView === "Info" && <SingleCircleInfoComponent authUserId={authUserId} isAdmin={isAdmin} authToken={authToken} circleId={id} />}
+         
         {/* Visible to only the admin */}
-      {isAdmin && currentView === "Invitation" && <MemberInvitationComponent authToken={authToken} circleId={id} />}
+      {isAdmin && currentView === "Invitation" && <MemberInvitationComponent authUserId={authUserId} authToken={authToken} circleId={id} />}
 
       </>}
     </div>

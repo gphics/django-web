@@ -108,7 +108,7 @@ function AmountData({ currency, amount, flagged }) {
       Amount
     </small>
 
-    <h3 className={flagged ? "text-rose-500" : "text-emerald-500" + " poppins-bold"}>
+    <h3 className={`poppins-bold ${flagged ? "text-rose-500" : "text-emerald-500"}`} >
       {currency} {amount}
     </h3>
   </article>

@@ -21,8 +21,11 @@ function CircleRendererComponent({ circleRes, pendingRes }) {
 
 
       </section>
-      {isPending ? <PendingInvitationComponent /> : <section className="flex justify-around flex-wrap  my-2 items-cennter">
-        <div className="w-[130px] flex flex-col justify-center items-center h-[130px] bg-overlay rounded-sm m-1 hover:bg-accent-color transition-all duration-300">
+      {isPending ? <PendingInvitationComponent pendingRes={pendingRes} /> :
+        <>
+          <h3 className="uppercase poppins-bold text-center my-2">My Transactions</h3>
+          <section className="flex justify-around flex-wrap  my-2 items-center">
+            <div className="w-[150px] flex flex-col justify-center items-center p-2 h-[150px] bg-overlay m-1 hover:bg-accent-color transition-all duration-300">
           <Link href="/circle/create"  className=" h-10 w-10 poppins-bold text-[1.5em] rounded-full bg-white text-center cursor-pointer">+</Link>
           <h4 className="mt-2">Create Circle</h4>
           
@@ -30,7 +33,10 @@ function CircleRendererComponent({ circleRes, pendingRes }) {
         
         {/* listing users circles */}
         <CircleListComponent circleRes={circleRes} />
-      </section>}
+        </section>
+        </>
+        }
+        
     </div>
   )
 }

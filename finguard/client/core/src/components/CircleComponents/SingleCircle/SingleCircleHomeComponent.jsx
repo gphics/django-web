@@ -7,7 +7,7 @@ async function fetchCircleMembersRanking(circleId, authToken) {
   return res
 }
 
-async function SingleCircleHomeComponent({ circleId, authToken }) {
+async function SingleCircleHomeComponent({ circleId, authToken, authUserId }) {
   // console.log("This is the home pge")
   // console.log(circleId, authToken)
   const res = await fetchCircleMembersRanking(circleId, authToken)
@@ -19,6 +19,7 @@ async function SingleCircleHomeComponent({ circleId, authToken }) {
     const finalProduct = {}
     // filling
     finalProduct.username = user?.username
+    finalProduct.userId = user?.id
     finalProduct.rank = elem?.rank
     finalProduct.media = profile?.media
     finalProduct.transaction_count = profile?.number_of_transactions
@@ -36,7 +37,7 @@ async function SingleCircleHomeComponent({ circleId, authToken }) {
       {!res?.success || res?.err ? <h3>{res?.err[0]}</h3> : <>
         <table className="w-full text-[0.9em] max-md:hidden">
           <thead>
-            <tr className="bg-accent-color h-10 ">
+            <tr className="bg-accent-color h-10 text-white ">
               <th className="text-start pl-2">Rank</th>
               <th className="text-start pl-2">Username</th>
               <th className="text-start pl-2">Financial Activity</th>
@@ -45,12 +46,13 @@ async function SingleCircleHomeComponent({ circleId, authToken }) {
               <th className="text-start pl-2">Min</th>
               <th className="text-start pl-2">Max</th>
             </tr>
+            
 
           </thead>
 
           <tbody>
             {data.map((elem, i) => {
-              return <tr key={i} className="bg-overlay h-13 ">
+              return <tr key={i} className={`my-4 transition-all border-b duration-400 h-18 ${elem?.userId === authUserId ? "bg-primary-color text-white" : "bg-white"} hover:bg-primary-color hover:text-white hover:font-semibold `}>
                 {/* Rank */}
                 <td className="text-start pl-2">{elem?.rank}  </td>
 
@@ -85,15 +87,18 @@ async function SingleCircleHomeComponent({ circleId, authToken }) {
         <section className="md:hidden mt-5 flex flex-wrap justify-center">
           {data.map((elem, i) => {
             return <div key={i} className="w-fit m-2">
-              <h4 className="mx-auto w-[40px] h-[30px] bg-accent-color rounded-t-sm text-center poppins-bold pt-1"> {elem?.rank} </h4>
-             <article className="flex flex-col p-4 bg-overlay  rounded-b-sm">
+             
+              <article className={`flex flex-col p-4 shadow-md ${elem?.userId === authUserId ?"bg-primary-color text-white" :"bg-white" } hover:bg-primary-color hover:text-white`}>
                {/* Username and media */}
                <div className="flex items-center">
 
                  <MediaPresentationComponent name={elem?.username} media={elem?.media} />
-                 <h4 className=" ml-2 capitalize">{elem?.username}</h4>
+                 <h4 className=" ml-2 capitalize font-semibold">{elem?.username}</h4>
                </div>
 
+               {/* Financial activity */}
+                <p> <strong>Rank :</strong> {elem?.rank}</p>
+                
                {/* Financial activity */}
                <p> <strong>Financial Activity :</strong> {elem?.financial_activity}</p>
 

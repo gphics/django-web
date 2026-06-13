@@ -302,20 +302,29 @@ class CircleInviteReadSerializer(serializers.ModelSerializer):
 
     user = serializers.CharField(source="user.username", read_only=True)
     circle = serializers.CharField(source="circle.name", read_only=True)
-    media = serializers.SerializerMethodField()
+    user_media = serializers.SerializerMethodField()
+    circle_media = serializers.SerializerMethodField()
     # media = MediaSerializer(read_only = True, allow_null=True)
     class Meta:
         model=CircleInvite
         fields = "__all__"
 
 
-    def get_media(self, obj):
+    def get_user_media(self, obj):
         """
         This method get the user media
         """
 
         if hasattr(obj.user.profile, "media"):
             return MediaSerializer(obj.user.profile.media).data
+
+    def get_circle_media(self, obj):
+        """
+        This method get the user media
+        """
+
+        if hasattr(obj.circle, "media"):
+            return MediaSerializer(obj.circle.media).data
         
 
         return None

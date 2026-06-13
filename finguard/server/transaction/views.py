@@ -751,7 +751,7 @@ class CircleInvitationCRUDView(APIView):
             invitations = request.user.invitations.all()
             serializer = CircleInviteReadSerializer(many = True, instance = invitations)
         return Response(generate_res({"msg": serializer.data}))
-
+ 
     def post(self, request):
         """
         ## This route is responsible for creating circle invite
@@ -852,7 +852,7 @@ class CircleInvitationCRUDView(APIView):
         # deleting invitation because it is no longer needed
         invitation.delete()
 
-        return Response(generate_res(err={"msg": response_text}))
+        return Response(generate_res({"msg": response_text}))
         
 
     # 

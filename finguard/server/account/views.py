@@ -148,6 +148,14 @@ class ProvileView(APIView):
         else:
             return Response(generate_res(err={user_ser.errors or None, profile_ser.errors or None}), status=status.HTTP_400_BAD_REQUEST)
     
+
+@api_view(["GET"])
+def get_auth_user_id(request):
+    """
+    This route is responsible for returning the auth user id .
+    """
+    return Response(generate_res({"msg": request.user.id}))
+
 @api_view(["GET"])
 def get_currencies(request):
     """

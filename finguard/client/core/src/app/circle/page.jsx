@@ -15,7 +15,7 @@ async function fetchCircle(authToken) {
   return res
 }
 async function fetchPendingInvitation(authToken) {
-  const res = await sendRequest("transaction/invite", { providedAuthToken: authToken })
+  const res = await sendRequest("transaction/circle-invite", { providedAuthToken: authToken })
   return res
 }
 
@@ -30,7 +30,6 @@ async function page() {
   const invitationRes = await fetchPendingInvitation(authToken)
   const circleRes = await fetchCircle(authToken)
 
- 
 
   return (
     <div className="px-1 flex flex-col flex-auto">
