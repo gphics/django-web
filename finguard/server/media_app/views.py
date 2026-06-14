@@ -114,7 +114,7 @@ class MediaUploadView(APIView):
 
                 # checking if the circle already have a media
                 if circle.media:
-                    print("deleting previous media for circle")
+                   
 
                     # deleting previous obj
                     media_client.delete_object(
@@ -138,7 +138,7 @@ class MediaUploadView(APIView):
                 auth_user_profile = request.user.profile
                 # checking if the user profile already have a media
                 if auth_user_profile.media:
-                    print("deleting previous media for user profile")
+                    
                     
                     # deleting previous obj
                     media_client.delete_object(

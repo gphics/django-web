@@ -4,7 +4,8 @@ import os
 
 base_dir =str(Path(__file__).resolve().parent)
 
-url = "http://127.0.0.1:8000/account/reg"
+url = "http://127.0.0.1:8000/account/auth"
+# url = "http://127.0.0.1:8000/account/reg"
 tokens = []
 usernames = [
     "guest",
@@ -26,7 +27,7 @@ for user in usernames:
     dummy_user.append({"username":user, "password":f"12345{user[:3]}"})
 
 def user_creation():
-    for user in dummy_user:
+    for user in dummy_user[:5]:
         result = send_request(url, user)
         token = result["data"]["msg"]["token"]
 
