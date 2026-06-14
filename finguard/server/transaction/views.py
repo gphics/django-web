@@ -326,6 +326,12 @@ class TransactionCRUDView(APIView):
 @api_view(["GET"])
 def detect_anomaly(request):
     user_transactions = request.user.transactions.all()
+
+    # Limitation
+    if len(user_transactions) < 5:
+        return Response(generate_res(err={"msg":"Five transactions are required to activate the machine learning analysis. "}))
+    
+    # serializing
     serializer = ShallowTransactionReadSerializer(user_transactions ,many = True)
 
     transformer = DataTransformationEngine(serializer.data)

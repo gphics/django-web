@@ -9,6 +9,8 @@ from .models import Media
 from transaction.models import Circle
 from rest_framework import status
 from .serializers import MediaSerializer
+
+
 bucket_name = settings.AWS_STORAGE_BUCKET_NAME
 
 
@@ -85,6 +87,8 @@ class MediaUploadView(APIView):
                 is_member = circle.is_member(user = request.user)
                 if not is_member:
                     return Response(generate_res(err={"msg":"Unauthorized action"}), status=status.HTTP_401_UNAUTHORIZED)
+            
+           
 
            
             # getting the configured s3 client
@@ -104,18 +108,60 @@ class MediaUploadView(APIView):
             )
 
             # FINAL OPs
-            if circle_id:
-                # saving the file details for circle
-                Media.objects.create(media_key = media_key, public_url=public_url, circle=circle)
-            else:
-                # saving the file details for user profile
-                Media.objects.create(media_key = media_key, public_url=public_url, user_profile=request.user.profile)
 
-            return Response({"msg":"image uploaded successfully"})
+            # for circle media
+            if circle_id:
+
+                # checking if the circle already have a media
+                if circle.media:
+                    print("deleting previous media for circle")
+
+                    # deleting previous obj
+                    media_client.delete_object(
+                        Bucket = bucket_name,
+                        Key = circle.media.media_key
+                    )
+
+                    # saving circle media update
+                    circle.media.public_url = public_url
+                    circle.media.media_key = media_key
+
+                    # final saving
+                    circle.media.save()
+                else:
+                    # saving the file details for circle
+                    Media.objects.create(media_key = media_key, public_url=public_url, circle=circle)
+            
+            # for user profile media
+            else:
+                 # getting user profile
+                auth_user_profile = request.user.profile
+                # checking if the user profile already have a media
+                if auth_user_profile.media:
+                    print("deleting previous media for user profile")
+                    
+                    # deleting previous obj
+                    media_client.delete_object(
+                        Bucket = bucket_name,
+                        Key = auth_user_profile.media.media_key
+                    )
+
+                    # saving user profile media update
+                    auth_user_profile.media.public_url = public_url
+                    auth_user_profile.media.media_key = media_key
+
+                    # final saving
+                    auth_user_profile.media.save()
+                else:
+                 
+                    # saving the file details for user profile
+                    Media.objects.create(media_key = media_key, public_url=public_url, user_profile=auth_user_profile)
+
+            return Response(generate_res({"msg":"image uploaded successfully"}))
         
         except Exception as e:
             return Response(generate_res(err={"msg":str(e)}))
-    
+
     # 
     # 
     # LEGACY ...
