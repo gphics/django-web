@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from . models import Profile
 from rapidfuzz import process as text_processor, fuzz
-from babel.numbers import get_currency_symbol
+from babel.numbers import get_currency_symbol, is_currency
 from media_app.serializers import MediaSerializer
 User = get_user_model()
 
@@ -121,16 +121,16 @@ class ProfileSerializer(serializers.ModelSerializer):
         This method is for validating the currency field. If the provided currency code exist, it's currency symbol is returned for saving into the db field.
         """
 
-        currency_code = value
-
-        # getting currency symbol
-        currency_symbol = get_currency_symbol(currency_code)
-
-        if currency_code == "XYZ":
+        
+        currency_code = value.upper()
+        if not is_currency(currency_code):
             # raising error
             raise serializers.ValidationError(f"Currency code '{currency_code}' is invalid")
+        
+        
         else:
-
+            # getting currency symbol
+            currency_symbol = get_currency_symbol(currency_code)
             # returning appropriate currency symbol
             return currency_symbol
 

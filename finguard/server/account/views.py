@@ -138,7 +138,7 @@ class ProvileView(APIView):
         # serializers
         user_ser = UserSerializer(instance = req_user, data = user, partial = True)
         profile_ser = ProfileSerializer(instance = req_profile, data = profile, partial = True)
-        
+         
         # validating and saving
         if user_ser.is_valid() and profile_ser.is_valid():
             with transaction.atomic():
@@ -146,7 +146,7 @@ class ProvileView(APIView):
                 profile_ser.save()
             return Response(generate_res(data={"msg": "user profile updated successfully"}))
         else:
-            return Response(generate_res(err={user_ser.errors or None, profile_ser.errors or None}), status=status.HTTP_400_BAD_REQUEST)
+            return Response(generate_res(err={"msg": user_ser.errors or profile_ser.errors or None}), status=status.HTTP_400_BAD_REQUEST)
     
 
 @api_view(["GET"])
@@ -155,6 +155,8 @@ def get_auth_user_id(request):
     This route is responsible for returning the auth user id .
     """
     return Response(generate_res({"msg": request.user.id}))
+
+
 
 @api_view(["GET"])
 def get_currencies(request):
@@ -242,7 +244,6 @@ def update_username(request):
     user.save()
 
     return Response(generate_res({"msg":"username updated successfully"}))
-
 
 
 @api_view(["PUT"])

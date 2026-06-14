@@ -16,3 +16,4 @@ urlpatterns = [
     # Class based view
     path("profile", ProvileView.as_view(), name="profile"),
 ]
+ 
