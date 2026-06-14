@@ -4,30 +4,30 @@ import { useState } from "react"
 
 export default function PersonalInformationComponent({ data }) {
     const userData = {
-        username: data?.user?.username,
-        email: data?.user?.email,
-        first_name: data?.user?.first_name,
-        last_name: data?.user?.last_name,
+        username: data?.user?.username || "",
+        email: data?.user?.email || "",
+        first_name: data?.user?.first_name || "",
+        last_name: data?.user?.last_name || "",
     }
 
     const profileData = {
-        city: data?.city,
-        country: data?.country,
-        state: data?.state,
-        contact: data?.contact,
+        city: data?.city || "",
+        country: data?.country || "",
+        state: data?.state || "",
+        contact: data?.contact || "",
 
     }
 
     const summaryStatData = {
-        "mean": data?.summary_statistics["mean"],
-        "min": data?.summary_statistics["min"],
-        "max": data?.summary_statistics["max"],
-        "std": data?.summary_statistics["std"],
-        "25%": data?.summary_statistics["25%"],
-        "50%": data?.summary_statistics["50%"],
-        "75%": data?.summary_statistics["75%"],
-        financial_activity: data?.financial_activity,
-        number_of_transactions: data?.number_of_transactions,
+        "mean": data?.summary_statistics?.["mean"] || "",
+        "min": data?.summary_statistics?.["min"] || "",
+        "max": data?.summary_statistics?.["max"] || "",
+        "std": data?.summary_statistics?.["std"] || "",
+        "25%": data?.summary_statistics?.["25%"] || "",
+        "50%": data?.summary_statistics?.["50%"] || "",
+        "75%": data?.summary_statistics?.["75%"] || "",
+        financial_activity: data?.financial_activity || "",
+        number_of_transactions: data?.number_of_transactions || "",
 
 
     }
@@ -48,7 +48,7 @@ export default function PersonalInformationComponent({ data }) {
 
                     return <article key={i} className="flex m-2 flex-col my-1  \ p-2">
                         <label htmlFor={key} className="capitalize my-1 font-medium"> {key} </label>
-                        <input placeholder={key + "..."} name={key} disabled={true} value={value} className="border rounded-md h-10 px-2 min-w-[300px] w-full" />
+                        <input placeholder={key + "..."} name={key} disabled={true} value={value} className="border rounded-md h-10 px-2 min-w-[300px] w-full cursor-not-allowed" />
                     </article>
                 })}
             </section>
@@ -62,7 +62,7 @@ export default function PersonalInformationComponent({ data }) {
                     
                     return <article key={i} className="flex m-2 flex-col my-1  \ p-2">
                         <label htmlFor={key} className="capitalize my-1 font-medium"> {key} </label>
-                        <input placeholder={key + "..."} name={key} disabled={true} value={value} className="border rounded-md h-10 px-2 min-w-[300px] w-full" />
+                        <input placeholder={key + "..."} name={key} disabled={true} value={value} className="border rounded-md h-10 px-2 min-w-[300px] w-full cursor-not-allowed" />
                     </article>
                 })}
             </section>
@@ -78,7 +78,7 @@ export default function PersonalInformationComponent({ data }) {
                     }
                     return <article key={i} className="flex m-2 flex-col my-1  \ p-2">
                         <label htmlFor={key} className="capitalize my-1 font-medium"> {key} </label>
-                        <input placeholder={key + "..."} name={key} disabled={true} value={value} className="border rounded-md h-10 px-2 min-w-[300px] w-full" />
+                        <input placeholder={key + "..."} name={key} disabled={true} value={value} className="border rounded-md h-10 px-2 min-w-[300px] w-full cursor-not-allowed" />
                     </article>
                 })}
             </section>

@@ -38,8 +38,15 @@ const [isLoading, setIsLoading] = useState(false)
 
         const first = await fetch(url, { method, body: formData, headers: { Authorization: "Token " + authToken } })
         const second = await first.json()
+
         setIsLoading(false)
         
+        if (second?.err || !second?.success) {
+            toast.error(String(second?.err?.msg))
+
+            return
+        }
+        toast.success(second?.data?.msg)
     }
     return (
         <form onSubmit={uploadFile} className="w-full max-w-[400px]">

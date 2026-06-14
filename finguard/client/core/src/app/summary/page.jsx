@@ -41,7 +41,7 @@ async function page({ searchParams }) {
 
   return (
     <div className="flex-auto flex flex-col px-1">
-      {!res.success ? <h2 className="self-center mx-auto"> {res.err[0]}  </h2> : <>
+      {!res.success ? <h2 className="self-center mx-auto my-20 capitalize font-bold text-[1.3em] text-primary-color text-center"> {res.err[0]}  </h2> : <>
         {/* User Summary */}
         <UserSummary data={res?.data?.msg?.user} />
 

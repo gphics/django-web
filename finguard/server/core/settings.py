@@ -31,8 +31,8 @@ debug_env = True if os.environ.get("DEBUG")  == "Yes" else False
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = debug_env
-
-ALLOWED_HOSTS = []
+# Read ALLOWED_HOSTS from Render environment variables, fallback to localhost for development
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 
 # Application definition
@@ -129,8 +129,8 @@ prod_db = {
         ssl_require=True
     )
 }
-DATABASES =  prod_db
-# DATABASES = dev_db if debug_env else prod_db
+# DATABASES =  prod_db
+DATABASES = dev_db if debug_env else prod_db
 
 
 # Password validation

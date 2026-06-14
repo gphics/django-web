@@ -25,7 +25,7 @@ function CircleCreationComponent({ circleData = null }) {
                 toast.warning(key + " must be provided", { toastId: key })
                 isValid = false
             }
-            
+
         })
         return isValid
     }
@@ -40,7 +40,7 @@ function CircleCreationComponent({ circleData = null }) {
         }
 
         const url = isUpdate ? ("transaction/circle?id=" + circleData?.id) : "transaction/circle"
-        const res = await sendRequest(url, { method: isUpdate ? "PUT": "POST", body: data })
+        const res = await sendRequest(url, { method: isUpdate ? "PUT" : "POST", body: data })
         setIsLoading(false)
         if (!res?.success || res?.err) {
 
@@ -52,20 +52,24 @@ function CircleCreationComponent({ circleData = null }) {
         router.replace("/circle")
     }
     return (
-        <form onSubmit={submitHandler}>
+        <form onSubmit={submitHandler} className="w-full max-w-[400px] flex flex-col items-center mx-auto">
 
             <ToastContainer position="top-center" theme="dark" />
+
             {isLoading && <FullPageLoadingComponent />}
-            <h2 className="poppins-bold text-center my-2"> {circleData ? "Update" : "Create"} Circle </h2>
-            <div className="my-2 flex flex-col w-[350px]">
-                <label className="my-1" htmlFor="name">Name</label>
-                <input placeholder="circle name ..." className="border-none outline-none bg-accent-color h-[40px] rounded-sm pl-2" type="text" name="name" value={data?.name} onChange={onChangeHandler} />
-            </div>
-            <div className="my-2 flex flex-col w-[350px]">
-                <label className="my-1" htmlFor="description">Description</label>
-                <textarea placeholder="circle description ..." className="border-none outline-none bg-accent-color min-h-[80px] max-h-[300px] rounded-sm field-sizing-content p-2" type="text" name="description" value={data?.description} onChange={onChangeHandler} />
-            </div>
-            <button type="submit" className="bg-accent-color ml-30 mt-2 px-4 py-1 poppins-bold py-1 rounded-sm cursor-pointer">Submit</button>
+            <fieldset className="border-2 p-5 rounded-md">
+                <legend className="poppins-bold text-center px-10"> {circleData ? "Update" : "Create"} Circle </legend>
+                <div className="my-2 flex flex-col">
+                    <label className="my-1 font-medium" htmlFor="name">Name</label>
+                    <input placeholder="circle name ..." className="border-none outline-none bg-primary-color h-[45px] rounded-sm pl-2 w-full text-white focus:bg-accent-color focus:text-primary-color font-medium" type="text" name="name" value={data?.name} onChange={onChangeHandler} />
+                </div>
+                <div className="my-2 flex flex-col w-[350px]">
+                    <label className="my-1 font-medium" htmlFor="description">Description</label>
+                    <textarea placeholder="circle description ..." className="border-none outline-none bg-primary-color min-h-[80px] focus:bg-accent-color focus:text-primary-color font-medium rounded-sm field-sizing-content p-2 text-white max-h-[200px]" type="text" name="description" value={data?.description} onChange={onChangeHandler} />
+                </div>
+                <button type="submit" className="bg-accent-color ml-30 mt-2 px-4 py-1 poppins-bold py-1 rounded-sm cursor-pointer">Submit</button>
+            </fieldset>
+
         </form>
     )
 }

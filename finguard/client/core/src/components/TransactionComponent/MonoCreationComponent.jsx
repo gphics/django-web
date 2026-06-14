@@ -162,7 +162,7 @@ function MonoCreationComponent({ currency, transactionData = null }) {
             {/* Description */}
             <div className="flex flex-col my-1 w-[90%]">
                 <label htmlFor="description">Description</label>
-                <textarea className="py-2 bg-primary-color text-white rounded-sm px-2 h-[45px] my-1 border-none outline-none font-medium focus:bg-accent-color focus:text-primary-color field-sizing-content" name="description" placeholder="transaction description ..." onChange={onChangeHandler} value={data?.description} />
+                <textarea className="py-2 bg-primary-color text-white rounded-sm px-2 min-h-[45px] my-1 border-none outline-none font-medium focus:bg-accent-color focus:text-primary-color field-sizing-content max-h-[200px]" name="description" placeholder="transaction description ..." onChange={onChangeHandler} value={data?.description} />
             </div>
 
 

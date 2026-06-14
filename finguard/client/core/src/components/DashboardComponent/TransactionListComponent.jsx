@@ -37,8 +37,10 @@ function TransactionListComponent({ transactions, currencyRes, transactionCount 
         const url = "transaction/detect-anomaly"
         const res = await sendRequest(url)
 
+        
         if (res?.err || !res?.success) {
             toast.error(res?.err[0])
+            setIsLoading(false)
             return
         }
 
@@ -68,7 +70,9 @@ function TransactionListComponent({ transactions, currencyRes, transactionCount 
 
                     <h3 className='poppins-bold text-center my-2'>My Transactions ({transactionCount}) </h3>
 
-                    <button type="button" className="bg-emerald-400 px-3 py-1 cursor-pointer hover:bg-rose-400 transition-all durationn-300 rounded-sm poppins-bold" onClick={anomalyDetection}>Detect Anomaly</button>
+                    {transactionData.length > 5 &&
+                        <button type="button" className="bg-emerald-400 px-3 py-1 cursor-pointer hover:bg-rose-400 transition-all durationn-300 rounded-sm poppins-bold" onClick={anomalyDetection}>Detect Anomaly</button>
+                    }
                 </section>
 
                 {/* Data Table */}
