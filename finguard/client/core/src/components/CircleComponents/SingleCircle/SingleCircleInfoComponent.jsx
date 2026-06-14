@@ -2,6 +2,8 @@ import MediaPresentationComponent from "@/components/Others/MediaPresentationCom
 import sendRequest from "@/utils/requestSender"
 import InfoMemberComponent from "./InfoMemberComponent"
 import SingleCircleInfoActionComponent from "./SingleCircleInfoActionComponent"
+import { FaEdit } from "react-icons/fa"
+import Link from "next/link"
 
 
 async function fetchCircleInfo(circleId, authToken) {
@@ -28,6 +30,10 @@ async function SingleCircleInfoComponent({ circleId, authToken, isAdmin, authUse
         {/* First */}
         <div className="my-2 mx-auto flex flex-col items-center">
           <MediaPresentationComponent name={data?.name} media={data?.media} />
+          
+          {isAdmin && 
+          <Link className="mb-2 mt-1 text-[1.3em] text-accent-color transition-all duration-300 hover:transform-[scale(1.2)] hover:text-primary-color" href={"/media?type=circle&id="+circleId}> <FaEdit/> </Link>
+        }
           <h3 className="poppins-bold text-[1.2em]"> {data?.name}  </h3>
           <p className="my-1 text-center max-w-[400px]"> {data?.description}  </p>
           <small className="font-medium"> {new Date(data?.created_at).toLocaleDateString()}  </small>

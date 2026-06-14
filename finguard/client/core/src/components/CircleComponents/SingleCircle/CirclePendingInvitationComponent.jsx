@@ -74,12 +74,13 @@ function CirclePendingInvitationComponent({ pendingCircleInvites, circleId }) {
 
         <section className='my-1 flex flex-wrap justify-around'>
           {inviteData.map((elem, i) => {
-            return <article key={i} className='flex flex-col justify-center my-2 px-2 shadow-md w-[300px] h-[120px] bg-overlay tranition-all duration-300 mx-1'>
+      
+            return <article key={i} className='flex flex-col justify-center my-2 px-4 py-2 shadow-md w-[250px] h-[150px] bg-primary-color rounded-sm text-white tranition-all duration-300 m-1'>
               <div className='mb-2 flex justify-between items-center'>
-                <MediaPresentationComponent media={elem?.media} name={elem?.user} />
+                <MediaPresentationComponent media={elem?.user_media} name={elem?.user} />
                 <h4 className='capitalize text-start  flex-auto ml-2'>{elem?.user}</h4>
               </div>
-              <button className='px-4 py-1 bg-rose-400 rounded-sm cursor-pointer hover:poppins-bold w-fit' type="button" onClick={() => withdrawInvite(elem?.id)}>Withdraw Invite</button>
+              <button className='px-5 py-1 bg-rose-400 rounded-sm cursor-pointer font-medium w-fit tranition-all duration-300 ' type="button" onClick={() => withdrawInvite(elem?.id)}>Withdraw Invite</button>
             </article>
           })}
         </section>

@@ -12,7 +12,7 @@ async function fetchCirclePendingInvitation(circleId, authToken) {
 async function MemberInvitationComponent({ circleId, authToken }) {
 
   const pendingCircleInvites = await fetchCirclePendingInvitation(circleId, authToken)
-  const fullKey = pendingCircleInvites?.data?.msg.length || 1
+  const fullKey = pendingCircleInvites?.data?.msg.length || 0
 
   
   return (

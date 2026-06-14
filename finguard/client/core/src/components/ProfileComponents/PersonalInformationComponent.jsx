@@ -1,4 +1,7 @@
 "use client"
+
+import { useState } from "react"
+
 export default function PersonalInformationComponent({ data }) {
     const userData = {
         username: data?.user?.username,
@@ -12,7 +15,7 @@ export default function PersonalInformationComponent({ data }) {
         country: data?.country,
         state: data?.state,
         contact: data?.contact,
-      
+
     }
 
     const summaryStatData = {
@@ -32,6 +35,7 @@ export default function PersonalInformationComponent({ data }) {
     const userDataArr = Object.entries(userData)
     const profileDataArr = Object.entries(profileData)
     const summaryStatDataArr = Object.entries(summaryStatData)
+ 
     return (
         <div className="flex flex-col justify-center items-center mb-2" >
 
@@ -41,8 +45,9 @@ export default function PersonalInformationComponent({ data }) {
                 {userDataArr.map((elem, i) => {
                     const key = elem[0]
                     const value = elem[1] || ""
+
                     return <article key={i} className="flex m-2 flex-col my-1  \ p-2">
-                        <label htmlFor={key} className="capitalize my-1"> {key} </label>
+                        <label htmlFor={key} className="capitalize my-1 font-medium"> {key} </label>
                         <input placeholder={key + "..."} name={key} disabled={true} value={value} className="border rounded-md h-10 px-2 min-w-[300px] w-full" />
                     </article>
                 })}
@@ -54,8 +59,9 @@ export default function PersonalInformationComponent({ data }) {
                 {profileDataArr.map((elem, i) => {
                     const key = elem[0]
                     const value = elem[1] || ""
+                    
                     return <article key={i} className="flex m-2 flex-col my-1  \ p-2">
-                        <label htmlFor={key} className="capitalize my-1"> {key} </label>
+                        <label htmlFor={key} className="capitalize my-1 font-medium"> {key} </label>
                         <input placeholder={key + "..."} name={key} disabled={true} value={value} className="border rounded-md h-10 px-2 min-w-[300px] w-full" />
                     </article>
                 })}
@@ -66,10 +72,13 @@ export default function PersonalInformationComponent({ data }) {
             <section className="flex flex-wrap justify-center items-center">
                 {summaryStatDataArr.map((elem, i) => {
                     const key = elem[0]
-                    const value = elem[1] || ""
+                    let value = elem[1] || ""
+                    if (key !== "financial_activity" && key !== "number_of_transactions") {
+                        value = userCurrency + " " + value
+                    }
                     return <article key={i} className="flex m-2 flex-col my-1  \ p-2">
-                        <label htmlFor={key} className="capitalize my-1"> {key} </label>
-                        <input placeholder={key + "..."} name={key} disabled={true} value={userCurrency + value} className="border rounded-md h-10 px-2 min-w-[300px] w-full" />
+                        <label htmlFor={key} className="capitalize my-1 font-medium"> {key} </label>
+                        <input placeholder={key + "..."} name={key} disabled={true} value={value} className="border rounded-md h-10 px-2 min-w-[300px] w-full" />
                     </article>
                 })}
             </section>

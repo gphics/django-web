@@ -41,7 +41,7 @@ class MediaUploadView(APIView):
             - media -> file
 
         ## Request query:
-            id?:int --> circle id. All circle members can update circle profile
+            id?:int --> circle id. All circle members can update circle profile but was restricted to only admin on the frontend
       
         ### s3_client.upload_fileobj
             - fileobj
@@ -62,6 +62,8 @@ class MediaUploadView(APIView):
             if not media:
                 return Response(generate_res(err={"msg":"image file must be uploaded"}), status=status.HTTP_400_BAD_REQUEST)
             
+            # file metadata
+
             mimetype = media.content_type
             media_name = media.name
             
@@ -84,9 +86,14 @@ class MediaUploadView(APIView):
                 if not is_member:
                     return Response(generate_res(err={"msg":"Unauthorized action"}), status=status.HTTP_401_UNAUTHORIZED)
 
+           
             # getting the configured s3 client
             media_client= get_s3_client()
             public_url, media_key = construct_media_url(media_name)
+            
+             # 
+            #  DELETING THE MEDIA IF ALREADY EXISTING
+
             
             # uploading file to s3
             media_client.upload_fileobj(
@@ -98,10 +105,10 @@ class MediaUploadView(APIView):
 
             # FINAL OPs
             if circle_id:
-                # saving the file details
+                # saving the file details for circle
                 Media.objects.create(media_key = media_key, public_url=public_url, circle=circle)
             else:
-                # saving the file details
+                # saving the file details for user profile
                 Media.objects.create(media_key = media_key, public_url=public_url, user_profile=request.user.profile)
 
             return Response({"msg":"image uploaded successfully"})
@@ -109,7 +116,11 @@ class MediaUploadView(APIView):
         except Exception as e:
             return Response(generate_res(err={"msg":str(e)}))
     
-
+    # 
+    # 
+    # LEGACY ...
+    # 
+    #  
     def put(self, request:Request):
         """
         # This method is for updating (delete and upload) an existing media

@@ -135,52 +135,53 @@ function MonoCreationComponent({ currency, transactionData = null }) {
         router.replace("/dashboard")
     }
     return (
-        <form onSubmit={submitHandler} className='flex flex-col transition-all duration-300'>
+        <form onSubmit={submitHandler} className=' mx-auto flex flex-col transition-all duration-300 items-center w-full max-w-[400px]'>
             {!!isLoading && <FullPageLoadingComponent />}
             <ToastContainer theme="dark" position="top-center" />
-
+<h2 className="font-bold text-[1.1em] uppercase my-2 text-center">Create Transaction</h2>
             {/* Amount */}
-            <div className="flex flex-col my-1">
-                <label htmlFor="amount">Amount({currency}) </label>
-                <input className="bg-accent-color rounded-sm px-1 h-[40px] max-w-[350px] my-1 border-none outline-none" onChange={onChangeHandler} value={data?.amount} type="number" name="amount" />
+            <div className="flex flex-col my-1 w-[90%]">
+                <label htmlFor="amount" className="font-medium">Amount({currency}) </label>
+                <input className="bg-primary-color text-white rounded-sm px-2 h-[45px] my-1 border-none outline-none font-medium focus:bg-accent-color focus:text-primary-color" onChange={onChangeHandler} value={data?.amount} type="number" name="amount" />
             </div>
 
             {/* Transaction Date */}
-            <div className="flex flex-col my-1">
+            <div className="flex flex-col my-1 w-[90%]">
                 <label htmlFor="transaction_date">Transaction Date</label>
-                <input className="bg-accent-color rounded-sm px-1 h-[40px] max-w-[350px] my-1 border-none outline-none" onChange={onChangeHandler} value={data?.transaction_date} type="datetime-local" name="transaction_date" />
+                <input className="bg-primary-color text-white rounded-sm px-2 h-[45px] my-1 border-none outline-none font-medium focus:bg-accent-color focus:text-primary-color" onChange={onChangeHandler} value={data?.transaction_date} type="datetime-local" name="transaction_date" />
             </div>
 
             {/* Transaction Type */}
-            <div className="flex flex-col my-1">
+            <div className="flex flex-col my-1 w-[90%]">
                 <label htmlFor="transaction_type">Transaction Type</label>
-                <select className="bg-accent-color rounded-sm px-1 h-[40px] max-w-[350px] my-1 border-none outline-none" onChange={onChangeHandler} value={data?.transaction_type} name="transaction_type" id="">
+                <select className="bg-primary-color text-white rounded-sm px-2 h-[45px] my-1 border-none outline-none font-medium focus:bg-accent-color focus:text-primary-color" onChange={onChangeHandler} value={data?.transaction_type} name="transaction_type" id="">
                     <option value="DEBIT">DEBIT</option>
                     <option value="CREDIT">CREDIT</option>
                 </select>
             </div>
             {/* Description */}
-            <div className="flex flex-col my-1">
+            <div className="flex flex-col my-1 w-[90%]">
                 <label htmlFor="description">Description</label>
-                <textarea className="border-none outline-none my-1 px-1 max-w-[350px] min-h-[80px] max-h-[300px] bg-accent-color rounded-sm py-1 field-sizing-content" name="description" placeholder="transaction description ..." onChange={onChangeHandler} value={data?.description} />
+                <textarea className="py-2 bg-primary-color text-white rounded-sm px-2 h-[45px] my-1 border-none outline-none font-medium focus:bg-accent-color focus:text-primary-color field-sizing-content" name="description" placeholder="transaction description ..." onChange={onChangeHandler} value={data?.description} />
             </div>
-            {/* Category ... */} 
 
-            <div className="flex flex-col my-1">
+
+            {/* Category ... */}
+            <div className="flex flex-col my-1 w-[90%]">
                 <label htmlFor="category">Category</label>
-                <section className="max-w-[350px] flex justify-between">
+                <section className=" flex justify-between">
                     <input onChange={(e) => {
                         onChangeHandler(e)
                         setNoMatching(false)
 
-                    }} placeholder="category title ..." type="search" className="bg-accent-color rounded-l-sm px-1 h-[40px] flex-auto  my-1 border-none outline-none" name="category" value={data?.category} />
-                    <button onClick={() => { fetchCategory(data?.category) }} className="bg-overlay h-[40px] self-center px-2 ml-1 cursor-pointer hover:bg-accent-color rounded-r-sm" type="button"><FaSearch /></button>
+                    }} placeholder="category title ..." type="search" className="bg-primary-color text-white rounded-l-sm px-2 h-[45px] my-1 border-none outline-none font-medium focus:bg-accent-color focus:text-primary-color flex-auto" name="category" value={data?.category} />
+                    <button onClick={() => { fetchCategory(data?.category) }} className="bg-overlay h-[45px] self-center px-2 ml-1 cursor-pointer hover:bg-accent-color rounded-r-sm" type="button"><FaSearch /></button>
                 </section>
 
                 {/* listing category search result */}
                 {!noMatching ?
 
-                    <article className="flex flex-wrap justify-around max-w-[350px] mt-2">
+                    <article className="flex flex-wrap justify-around  mt-2">
 
 
                         {categories.map((elem, i) => {
@@ -194,10 +195,10 @@ function MonoCreationComponent({ currency, transactionData = null }) {
                     </article>
                     : <>
                         {/* first info */}
-                        {isSearching ? <h4 className="poppins-bold max-w-[350px] text-center my-1">searching ...</h4> : <></>}
+                        {isSearching ? <h4 className="poppins-bold  text-center my-1">searching ...</h4> : <></>}
 
                         {/* second info */}
-                        {noMatching && data?.category ? <h4 className="poppins-bold  max-w-[350px] text-center my-1"> New category {`"${data?.category}"`} will be created when you submit the form.</h4> : <></>}
+                        {noMatching && data?.category ? <h4 className="poppins-bold   text-center my-1"> New category {`"${data?.category}"`} will be created when you submit the form.</h4> : <></>}
                     </>}
             </div>
 

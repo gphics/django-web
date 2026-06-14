@@ -99,8 +99,9 @@ function MemberInvitationClientComponent() {
             {!!users.length &&
                 <section className="flex flex-wrap justify-around items-center">
                     {users.map((elem, i) => {
+                      
                         return <article key={i} className="flex justify-between w-full max-w-[300px] my-2 bg-overlay p-3 items-center hover:text-white hover:bg-primary-color">
-                            <MediaPresentationComponent name={elem?.username} media={elem?.user_media} />
+                            <MediaPresentationComponent name={elem?.username} media={elem?.media} />
 
                             <div className="flex flex-col flex-auto ml-3">
                                 <h4 className="capitalize poppins-bold"> {elem?.username}  </h4>
