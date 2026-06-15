@@ -6,6 +6,13 @@ from django.db import transaction
 from celery.utils.log import get_task_logger
 from celery import shared_task
 
+# 
+# 
+# LEGACY
+# 
+# 
+# 
+
 logger = get_task_logger(__name__)
 
 def get_summary_stat(user):

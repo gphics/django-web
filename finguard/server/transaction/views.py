@@ -1,5 +1,4 @@
 
-from account.tasks import update_profile_task
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
@@ -290,13 +289,8 @@ class TransactionCRUDView(APIView):
             if serializer.is_valid():
                 serializer.save()
                 return Response(generate_res({"msg":"transaction updated"}))
-            
-          
 
-            # updating the user profile in the background
-            update_profile_task.delay_on_commit(trans[0].user.pk)
-
-            # returning status message ...
+            # returning status message ... 
             return Response(generate_res(err={"msg": serializer.errors}), status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response(generate_res(err={"msg": str(e)}), status=status.HTTP_400_BAD_REQUEST)

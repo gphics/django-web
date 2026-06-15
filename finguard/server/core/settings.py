@@ -132,17 +132,23 @@ prod_db = {
 # DATABASES =  prod_db
 DATABASES = dev_db if debug_env else prod_db
 
-# CELERY CONFIGURATION
-CELERY_BROKER_URL = os.environ.get(
-    'CELERY_BROKER_URL', 
-    'amqp://guest:guest@localhost:5672//'
-)
+# 
+# 
+# LEGACY
+# 
+# 
 
-# Optional project stability configs
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_WORKER_MAX_TASKS_PER_CHILD = 1000 
+# CELERY CONFIGURATION
+# CELERY_BROKER_URL = os.environ.get(
+#     'CELERY_BROKER_URL', 
+#     'amqp://guest:guest@localhost:5672//'
+# )
+
+# # Optional project stability configs
+# CELERY_ACCEPT_CONTENT = ['json']
+# CELERY_TASK_SERIALIZER = 'json'
+# CELERY_RESULT_SERIALIZER = 'json'
+# CELERY_WORKER_MAX_TASKS_PER_CHILD = 1000 
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
