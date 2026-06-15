@@ -1,14 +1,14 @@
 /** @type {import('next').NextConfig} */
-import { fileURLToPath } from "url";
-import path from "path";
+// import { fileURLToPath } from "url";
+// import path from "path";
 
-const filename = fileURLToPath(import.meta.url);
-const dirname = path.dirname(filename);
+// const filename = fileURLToPath(import.meta.url);
+// const dirname = path.dirname(filename);
 
 const nextConfig = {
   /* config options here */
   reactCompiler: true,
-  outputFileTracingRoot: path.join(dirname),
+  // outputFileTracingRoot: path.join(dirname),
   images: {
     remotePatterns: [
       {
