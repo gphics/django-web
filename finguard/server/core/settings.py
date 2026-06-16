@@ -34,7 +34,14 @@ debug_env = True if os.environ.get("DEBUG")  == "Yes" else False
 DEBUG = debug_env
 
 # Read ALLOWED_HOSTS from Render environment variables, fallback to localhost for development
-ALLOWED_HOSTS = ["*"]
+# ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [
+    '.onrender.com',               # Matches your app and any Render subdomains
+    '://onrender.com',  # Your exact backend domain
+    '127.0.0.1',                   # Allows Render's internal loopback proxy
+    'localhost',                   # Allows local development
+]
+
 # ALLOWED_HOSTS = [
 #     os.environ.get("ALLOWED_HOST"), 
 #     '127.0.0.1',                   # 🚀 Add this: Render's internal routing IP
