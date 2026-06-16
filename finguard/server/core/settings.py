@@ -92,6 +92,8 @@ USE_X_FORWARDED_PORT = True
 
 CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = [
+    "https://onrender.com",
+    "https://vercel.app",
    os.environ.get("CLIENT_URL"),
    "http://localhost:5000",
     "http://127.0.0.1:5000",
