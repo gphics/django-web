@@ -31,8 +31,8 @@ debug_env = True if os.environ.get("DEBUG")  == "Yes" else False
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = debug_env
+
 # Read ALLOWED_HOSTS from Render environment variables, fallback to localhost for development
-ALLOWED_HOSTS = ["*"]
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 
@@ -66,7 +66,7 @@ INSTALLED_APPS =  DJANGO_APPS + THIRD_PARTY_APPS + CUSTOM_APPS
 
 
 MIDDLEWARE = [
-      "corsheaders.middleware.CorsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
