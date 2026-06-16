@@ -80,6 +80,7 @@ INSTALLED_APPS =  DJANGO_APPS + THIRD_PARTY_APPS + CUSTOM_APPS
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -225,7 +226,16 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# Static file settings
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+# Enable WhiteNoise compression and caching functionality (Optional but recommended)
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 # AWS S3 SETTINGS
 AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
