@@ -57,7 +57,7 @@ function AuthForm({ category }) {
         const url = category === "login" ? "account/auth" : "account/reg"
         const res = await sendRequest(url, {body, method:"post", isAuth:false})
         setIsLoading(!true)
-        console.log(res)
+  
         // if no error
         if (res.success) {
             const cookieMgt = CookieManager()
