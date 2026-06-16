@@ -34,7 +34,7 @@ debug_env = True if os.environ.get("DEBUG")  == "Yes" else False
 DEBUG = debug_env
 
 # Read ALLOWED_HOSTS from Render environment variables, fallback to localhost for development
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+ALLOWED_HOSTS = [os.environ.get("ALLOWED_HOSTS")]
 
 
 # Application definition
