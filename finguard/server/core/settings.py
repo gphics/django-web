@@ -34,7 +34,8 @@ debug_env = True if os.environ.get("DEBUG")  == "Yes" else False
 DEBUG = debug_env
 
 # Read ALLOWED_HOSTS from Render environment variables, fallback to localhost for development
-ALLOWED_HOSTS = [os.environ.get("ALLOWED_HOSTS")]
+ALLOWED_HOSTS = ["https://finguard-fvnu.onrender.com"]
+# ALLOWED_HOSTS = [os.environ.get("ALLOWED_HOSTS")]
 
 
 # Application definition
@@ -78,7 +79,8 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-   os.environ.get("CLIENT_URL"),
+#    os.environ.get("CLIENT_URL"),
+"https://finguard-xi.vercel.app",
    "http://localhost:5000",
     "http://127.0.0.1:5000",
 ]
@@ -91,8 +93,8 @@ USE_X_FORWARDED_PORT = True
 
 CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = [
-    os.environ.get("SERVER_URL"),
-   os.environ.get("CLIENT_URL"),
+#    os.environ.get("CLIENT_URL"),
+"https://finguard-xi.vercel.app",
    "http://localhost:5000",
     "http://127.0.0.1:5000",
 ]
