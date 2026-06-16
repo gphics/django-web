@@ -32,7 +32,7 @@ debug_env = True if os.environ.get("DEBUG")  == "Yes" else False
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = debug_env
 # Read ALLOWED_HOSTS from Render environment variables, fallback to localhost for development
-ALLOWED_HOSTS = "*"
+ALLOWED_HOSTS = ["*"]
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 
@@ -85,6 +85,8 @@ CORS_ALLOWED_ORIGINS = [
 # Tells Django to trust Render's reverse proxy header for secure connections
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
+USE_X_FORWARDED_HOST = True
+USE_X_FORWARDED_PORT = True
 
 CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = [
