@@ -68,6 +68,7 @@ export default async function sendRequest(url, options = {}) {
         ? await first.json()
         : { err: "Server returned a non-JSON response" };
 
+    console.log(second)
     // if an error was returned from the server
     if (second?.err) {
       second.err = getErrMsg(second.err);
