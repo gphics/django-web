@@ -34,8 +34,8 @@ debug_env = True if os.environ.get("DEBUG")  == "Yes" else False
 DEBUG = debug_env
 
 # Read ALLOWED_HOSTS from Render environment variables, fallback to localhost for development
-ALLOWED_HOSTS = ["https://finguard-fvnu.onrender.com"]
-# ALLOWED_HOSTS = [os.environ.get("ALLOWED_HOSTS")]
+# ALLOWED_HOSTS = ["https://finguard-fvnu.onrender.com"]
+ALLOWED_HOSTS = [os.environ.get("ALLOWED_HOST")]
 
 
 # Application definition
