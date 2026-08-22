@@ -34,19 +34,13 @@ debug_env = True if os.environ.get("DEBUG")  == "Yes" else False
 DEBUG = debug_env
 
 # Read ALLOWED_HOSTS from Render environment variables, fallback to localhost for development
-# ALLOWED_HOSTS = ["*"]
+
 ALLOWED_HOSTS = [
     '.onrender.com',               # Matches your app and any Render subdomains
     '://onrender.com',  # Your exact backend domain
     '127.0.0.1',                   # Allows Render's internal loopback proxy
     'localhost',                   # Allows local development
 ]
-
-# ALLOWED_HOSTS = [
-#     os.environ.get("ALLOWED_HOST"), 
-#     '127.0.0.1',                   # 🚀 Add this: Render's internal routing IP
-#     'localhost',     ]
-
 
 # Application definition
 
@@ -135,18 +129,18 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 dev_db = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # },
-    "default":{
-        "ENGINE":"django.db.backends.postgresql",
-        "NAME":"finguard",
-        "USER":"postgres",
-        "PASSWORD":782800,
-        "HOST":"localhost",
-        "PORT":"5432"
-    }
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    },
+    # "default":{
+    #     "ENGINE":"django.db.backends.postgresql",
+    #     "NAME":"finguard",
+    #     "USER":"postgres",
+    #     "PASSWORD":782800,
+    #     "HOST":"localhost",
+    #     "PORT":"5432"
+    # }
 }
 prod_db = {
     "default": dj_database_url.config(
@@ -156,7 +150,8 @@ prod_db = {
     )
 }
 # DATABASES =  prod_db
-DATABASES = dev_db if debug_env else prod_db
+DATABASES = dev_db 
+# DATABASES = dev_db if debug_env else prod_db
 
 # 
 # 
